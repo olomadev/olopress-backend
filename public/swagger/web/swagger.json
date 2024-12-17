@@ -1,0 +1,2215 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Olopress API",
+        "version": "1.0"
+    },
+    "paths": {
+        "/account/findMe": {
+            "get": {
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Find my account data",
+                "operationId": "account_findOneById",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountFindMe"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/update": {
+            "put": {
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Update account",
+                "operationId": "account_update",
+                "requestBody": {
+                    "description": "Update Cost",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AccountSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/account/updatePassword": {
+            "put": {
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Update password",
+                "operationId": "account_updatePassword",
+                "requestBody": {
+                    "description": "Update Password",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePassword"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/auth/changePassword": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Changing password after resetting code",
+                "operationId": "auth_changePassword",
+                "requestBody": {
+                    "description": "Send reset code request",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePassword"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/auth/checkResetCode": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Check reset code is valid or expired",
+                "operationId": "auth_checkResetCode",
+                "parameters": [
+                    {
+                        "name": "resetCode",
+                        "in": "query",
+                        "description": "File id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout the user",
+                "operationId": "auth_logout",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh the token",
+                "operationId": "auth_refresh",
+                "requestBody": {
+                    "description": "Token refresh request",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshToken"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response: token is expired"
+                    }
+                }
+            }
+        },
+        "/auth/resetPassword": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Send reset password code to user",
+                "operationId": "auth_resetPassword",
+                "requestBody": {
+                    "description": "Send reset password request",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResetPassword"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/auth/session": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Updaate session with aixos requests",
+                "operationId": "auth_session",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/auth/token": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authenticate the user",
+                "operationId": "auth_token",
+                "requestBody": {
+                    "description": "Authenticate",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResult"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/categories/create": {
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Create a new user",
+                "operationId": "categories_create",
+                "requestBody": {
+                    "description": "Create a new category",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategorySave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/categories/delete/{categoryId}": {
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Delete category",
+                "operationId": "category_delete",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "description": "Category uuid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/categories/findAllByPaging": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Find all categories tree",
+                "operationId": "categories_findAllByPaging",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoriesFindAllByPaging"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/categories/findAll": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Find all categories",
+                "operationId": "categories_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/categories/update/{cateogoryId}": {
+            "put": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update category",
+                "operationId": "categories_update",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update category",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategorySave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/actions/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all actions",
+                "operationId": "actions_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/areaCodes/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all area codes",
+                "operationId": "areaCodes_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AreaCodesFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/cities/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all cities",
+                "operationId": "cities_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/countries/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all countries",
+                "operationId": "countries_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/currencies/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all currencies",
+                "operationId": "currencies_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/files/findOneById/{fileId}": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find ",
+                "operationId": "files_findOne",
+                "parameters": [
+                    {
+                        "name": "fileId",
+                        "in": "path",
+                        "description": "File id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tableName",
+                        "in": "query",
+                        "description": "File tableName",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation (File content returns to Base64 string)"
+                    }
+                }
+            }
+        },
+        "/files/readOneById/{fileId}": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find ",
+                "operationId": "files_readOne",
+                "parameters": [
+                    {
+                        "name": "fileId",
+                        "in": "path",
+                        "description": "File id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tableName",
+                        "in": "query",
+                        "description": "File tableName",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation (File content returns to Base64 string)"
+                    }
+                }
+            }
+        },
+        "/locales/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all locales",
+                "operationId": "locales_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/methods/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all allowed http methods",
+                "operationId": "methods_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/months/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all months",
+                "operationId": "months_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/stream/events": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Server-Sent Events",
+                "operationId": "stream_events",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/years/findAll": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Find all years",
+                "operationId": "years_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/failedlogins/delete/{loginId}": {
+            "delete": {
+                "tags": [
+                    "Failed Logins"
+                ],
+                "summary": "Delete failed login",
+                "operationId": "failedlogins_delete",
+                "parameters": [
+                    {
+                        "name": "loginId",
+                        "in": "path",
+                        "description": "Failed login uuid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/failedlogins/findAllByPaging": {
+            "get": {
+                "tags": [
+                    "Failed Logins"
+                ],
+                "summary": "Find all failed logins by pagination",
+                "operationId": "failedlogins_findAllByPaging",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Search string",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_perPage",
+                        "in": "query",
+                        "description": "Per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_sort",
+                        "in": "query",
+                        "description": "Order items",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {}
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FailedLoginsFindAllByPaging"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/failedloginips/findAll": {
+            "get": {
+                "tags": [
+                    "Failed Logins"
+                ],
+                "summary": "Find all ips for failed logins",
+                "operationId": "failedloginips_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/failedloginusernames/findAll": {
+            "get": {
+                "tags": [
+                    "Failed Logins"
+                ],
+                "summary": "Find all usernames for failed logins",
+                "operationId": "failedloginusernames_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/permissions/copy/{permId}": {
+            "post": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Copy a permission",
+                "operationId": "permissions_copy",
+                "requestBody": {
+                    "description": "Create a new permission",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PermissionSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/permissions/create": {
+            "post": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Create a new permission",
+                "operationId": "permissions_create",
+                "requestBody": {
+                    "description": "Create a new permission",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PermissionSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/permissions/delete/{permId}": {
+            "delete": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Delete permission",
+                "operationId": "permissions_delete",
+                "parameters": [
+                    {
+                        "name": "permId",
+                        "in": "path",
+                        "description": "Permission uuid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/permissions/findAllByPaging": {
+            "get": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Find all permissions",
+                "operationId": "permissions_findAllByPaging",
+                "parameters": [
+                    {
+                        "name": "$filters",
+                        "in": "query",
+                        "description": "Search string",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PermissionsFindAllByPaging"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/permissions/findAll": {
+            "get": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Find all permissions",
+                "operationId": "permissions_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PermissionsFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/permissions/update/{permId}": {
+            "put": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Update a permission",
+                "operationId": "permissions_update",
+                "requestBody": {
+                    "description": "Update a permission",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PermissionSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/roles/create": {
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Create a new role",
+                "operationId": "roles_create",
+                "requestBody": {
+                    "description": "Create a new role",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoleSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/roles/delete/{permId}": {
+            "delete": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Delete role",
+                "operationId": "roles_delete",
+                "parameters": [
+                    {
+                        "name": "roleId",
+                        "in": "path",
+                        "description": "Role uuid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/roles/findAllByPaging": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Find all roles by pagination",
+                "operationId": "roles_findAllByPaging",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Search string",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_perPage",
+                        "in": "query",
+                        "description": "Per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_sort",
+                        "in": "query",
+                        "description": "Order items",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {}
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolesFindAllByPaging"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/roles/findAll": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Find all roles",
+                "operationId": "roles_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/roles/findOneById/{roleId}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Find item data",
+                "operationId": "roles_findOneById",
+                "parameters": [
+                    {
+                        "name": "roleId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolesFindOneById"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/roles/update/{roleId}": {
+            "put": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Update role",
+                "operationId": "roles_update",
+                "parameters": [
+                    {
+                        "name": "roleId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update role",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoleSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/users/create": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create a new user",
+                "operationId": "users_create",
+                "requestBody": {
+                    "description": "Create a new user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/users/delete/{userId}": {
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete user",
+                "operationId": "users_delete",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "user uuid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/users/findAllByPaging": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Find all users by pagination",
+                "operationId": "users_findAllByPaging",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Search string",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_perPage",
+                        "in": "query",
+                        "description": "Per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_sort",
+                        "in": "query",
+                        "description": "Order items",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {}
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UsersFindAllByPaging"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/users/findAll": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Find all users for autocompleters",
+                "operationId": "users_findAll",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonFindAll"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/users/findOneById": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Find one user by id",
+                "operationId": "users_findOneById",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UsersFindOneById"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No result found"
+                    }
+                }
+            }
+        },
+        "/users/update/{userId}": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update user",
+                "operationId": "users_update",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        },
+        "/users/updatePassword/{userId}": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update user passwors",
+                "operationId": "users_updatePassword",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PasswordSave"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request, returns to validation errors"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AccountFindMe": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/AccountFindMeObject"
+                    }
+                },
+                "type": "object"
+            },
+            "AccountFindMeObject": {
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "themeColor": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "integer"
+                    },
+                    "locale": {
+                        "$ref": "#/components/schemas/ObjectId"
+                    },
+                    "emailActivation": {
+                        "type": "integer"
+                    },
+                    "avatar": {
+                        "$ref": "#/components/schemas/AvatarObject"
+                    }
+                },
+                "type": "object"
+            },
+            "AccountSave": {
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "themeColor": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "integer"
+                    },
+                    "locale": {
+                        "$ref": "#/components/schemas/ObjectId"
+                    },
+                    "emailActivation": {
+                        "type": "integer"
+                    },
+                    "avatar": {
+                        "$ref": "#/components/schemas/AvatarObject"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdatePassword": {
+                "properties": {
+                    "oldPassword": {
+                        "type": "string"
+                    },
+                    "newPassword": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "AuthRequest": {
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "AuthResult": {
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserObject"
+                    },
+                    "expiresAt": {
+                        "description": "Expiration date of token",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "ChangePassword": {
+                "properties": {
+                    "newPassword": {
+                        "type": "string"
+                    },
+                    "newPasswordConfirm": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RefreshToken": {
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ResetPassword": {
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserObject": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "email": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "AvatarObject": {
+                "properties": {
+                    "image": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "CategoriesFindAllByPaging": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "categoryId": {
+                                    "type": "string"
+                                },
+                                "parentId": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "slug": {
+                                    "type": "string"
+                                },
+                                "rgt": {
+                                    "type": "number"
+                                },
+                                "lft": {
+                                    "type": "number"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "CategorySave": {
+                "properties": {
+                    "categoryId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "parentId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "lft": {
+                        "type": "integer"
+                    },
+                    "rgt": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "AreaCodesFindAll": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "phoneMask": {
+                                    "type": "string"
+                                },
+                                "mobileMask": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "CommonFindAll": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "FailedLoginsFindAllByPaging": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FailedLoginsFindAllByPagingObject"
+                        }
+                    },
+                    "page": {
+                        "type": "integer"
+                    },
+                    "perPage": {
+                        "type": "integer"
+                    },
+                    "totalPages": {
+                        "type": "integer"
+                    },
+                    "totalItems": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "FailedLoginsFindAllByPagingObject": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "attemptedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "userAgent": {
+                        "type": "string"
+                    },
+                    "ip": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ObjectId": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionSave": {
+                "properties": {
+                    "permId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "moduleName": {
+                        "type": "string"
+                    },
+                    "resource": {
+                        "type": "string"
+                    },
+                    "action": {
+                        "$ref": "#/components/schemas/ObjectId"
+                    },
+                    "route": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "$ref": "#/components/schemas/ObjectId"
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionsFindAll": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "permId": {
+                                    "type": "string"
+                                },
+                                "moduleName": {
+                                    "type": "string"
+                                },
+                                "route": {
+                                    "type": "string"
+                                },
+                                "method": {
+                                    "type": "string"
+                                },
+                                "action": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionsFindAllByPaging": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PermissionsFindAllByPagingObject"
+                        }
+                    },
+                    "page": {
+                        "type": "integer"
+                    },
+                    "perPage": {
+                        "type": "integer"
+                    },
+                    "totalPages": {
+                        "type": "integer"
+                    },
+                    "totalItems": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionsFindAllByPagingObject": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "moduleName": {
+                        "type": "string"
+                    },
+                    "resource": {
+                        "type": "string"
+                    },
+                    "action": {
+                        "type": "string"
+                    },
+                    "route": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RoleSave": {
+                "properties": {
+                    "roleId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "roleKey": {
+                        "type": "string"
+                    },
+                    "roleName": {
+                        "type": "string"
+                    },
+                    "roleLevel": {
+                        "type": "number"
+                    },
+                    "rolePermissions": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "permId": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "RolesFindAllByPaging": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RolesFindAllByPagingObject"
+                        }
+                    },
+                    "page": {
+                        "type": "integer"
+                    },
+                    "perPage": {
+                        "type": "integer"
+                    },
+                    "totalPages": {
+                        "type": "integer"
+                    },
+                    "totalItems": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "RolesFindAllByPagingObject": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "roleKey": {
+                        "type": "string"
+                    },
+                    "roleName": {
+                        "type": "string"
+                    },
+                    "roleLevel": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RolesFindOneById": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/RolesFindOneByIdObject"
+                    }
+                },
+                "type": "object"
+            },
+            "RolesFindOneByIdObject": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "roleName": {
+                        "type": "string"
+                    },
+                    "roleKey": {
+                        "type": "string"
+                    },
+                    "roleLevel": {
+                        "type": "string"
+                    },
+                    "rolePermissions": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "permId": {
+                                    "type": "string"
+                                },
+                                "moduleName": {
+                                    "type": "string"
+                                },
+                                "method": {
+                                    "type": "string"
+                                },
+                                "route": {
+                                    "type": "string"
+                                },
+                                "action": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PasswordSave": {
+                "properties": {
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserSave": {
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "integer"
+                    },
+                    "emailActivation": {
+                        "type": "integer"
+                    },
+                    "themeColor": {
+                        "type": "string"
+                    },
+                    "avatar": {
+                        "$ref": "#/components/schemas/AvatarObject"
+                    },
+                    "userRoles": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UsersFindAllByPaging": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UsersFindAllByPagingObject"
+                        }
+                    },
+                    "page": {
+                        "type": "integer"
+                    },
+                    "perPage": {
+                        "type": "integer"
+                    },
+                    "totalPages": {
+                        "type": "integer"
+                    },
+                    "totalItems": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "UsersFindAllByPagingObject": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "themeColor": {
+                        "type": "string"
+                    },
+                    "lastLogin": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "active": {
+                        "type": "integer"
+                    },
+                    "emailActivation": {
+                        "type": "integer"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "userRoles": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UsersFindOneById": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/UsersFindOneByIdObject"
+                    }
+                },
+                "type": "object"
+            },
+            "UsersFindOneByIdObject": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "integer"
+                    },
+                    "emailActivation": {
+                        "type": "integer"
+                    },
+                    "themeColor": {
+                        "type": "string"
+                    },
+                    "avatar": {
+                        "$ref": "#/components/schemas/AvatarObject"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "lastLogin": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "userRoles": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Account",
+            "description": "Account"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Categories",
+            "description": "Categories"
+        },
+        {
+            "name": "Common",
+            "description": "Common"
+        },
+        {
+            "name": "Failed Logins",
+            "description": "Failed Logins"
+        },
+        {
+            "name": "Permissions",
+            "description": "Permissions"
+        },
+        {
+            "name": "Roles",
+            "description": "Roles"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
+        }
+    ]
+}
