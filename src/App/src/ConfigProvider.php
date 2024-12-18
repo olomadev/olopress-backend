@@ -138,6 +138,13 @@ class ConfigProvider
                 Handler\Categories\DeleteHandler::class => Handler\Categories\DeleteHandlerFactory::class,
                 Handler\Categories\FindAllHandler::class => Handler\Categories\FindAllHandlerFactory::class,
                 Handler\Categories\FindAllByPagingHandler::class => Handler\Categories\FindAllByPagingHandlerFactory::class,
+                // posts
+                Handler\Posts\CreateHandler::class => Handler\Posts\CreateHandlerFactory::class,
+                Handler\Posts\UpdateHandler::class => Handler\Posts\UpdateHandlerFactory::class,
+                Handler\Posts\DeleteHandler::class => Handler\Posts\DeleteHandlerFactory::class,
+                Handler\Posts\FindOneByIdHandler::class => Handler\Posts\FindOneByIdHandlerFactory::class,
+                Handler\Posts\FindAllHandler::class => Handler\Posts\FindAllHandlerFactory::class,
+                Handler\Posts\FindAllByPagingHandler::class => Handler\Posts\FindAllByPagingHandlerFactory::class,
                 // users
                 Handler\Users\CreateHandler::class => Handler\Users\CreateHandlerFactory::class,
                 Handler\Users\UpdateHandler::class => Handler\Users\UpdateHandlerFactory::class,
@@ -207,6 +214,17 @@ class ConfigProvider
                         $columnFilters
                     );
                 },
+                Model\PostModel::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $cacheStorage = $container->get(StorageInterface::class);
+                    $columnFilters = $container->get(ColumnFiltersInterface::class);
+                    $posts = new TableGateway('posts', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    return new Model\PostModel(
+                        $posts,
+                        $cacheStorage,
+                        $columnFilters
+                    );
+                },                
                 Model\RoleModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $cacheStorage = $container->get(StorageInterface::class);
