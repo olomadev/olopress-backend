@@ -66,7 +66,6 @@ class PostModel
             'authorId',
             'title',
             'permalink',
-            'content',
             'published',
             'createdAt',
         ]);
@@ -82,7 +81,6 @@ class PostModel
             'authorId',
             'title',
             'permalink',
-            'content',
             'published',
         ]);
         $this->columnFilters->setData($get);
@@ -124,7 +122,7 @@ class PostModel
             'authorId',
             'title',
             'permalink',
-            'content',
+            'contentJson',
             'published',
             'createdAt',
         ]);
