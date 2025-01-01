@@ -7,6 +7,7 @@ namespace App\Handler\Posts;
 use App\Model\PostModel;
 use App\Schema\Posts\PostSave;
 use App\Filter\Posts\SaveFilter;
+use Mezzio\Authentication\UserInterface;
 use Olobase\Mezzio\DataManagerInterface;
 use Olobase\Mezzio\Error\ErrorWrapperInterface as Error;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -52,12 +53,15 @@ class CreateHandler implements RequestHandlerInterface
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $user = $request->getAttribute(UserInterface::class); // get id from current token
+        $userId = $user->getId();
         $this->filter->setInputData($request->getParsedBody());
         $data = array();
         $response = array();
         if ($this->filter->isValid()) {
             $this->dataManager->setInputFilter($this->filter);
             $data = $this->dataManager->getSaveData(PostSave::class, 'posts');
+            $data['posts']['authorId'] = $userId;
             $this->postModel->create($data);
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);

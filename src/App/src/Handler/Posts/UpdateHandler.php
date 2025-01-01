@@ -7,6 +7,7 @@ namespace App\Handler\Posts;
 use App\Model\PostModel;
 use App\Schema\Posts\PostSave;
 use App\Filter\Posts\SaveFilter;
+use Mezzio\Authentication\UserInterface;
 use Olobase\Mezzio\DataManagerInterface;
 use Olobase\Mezzio\Error\ErrorWrapperInterface as Error;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -28,16 +29,16 @@ class UpdateHandler implements RequestHandlerInterface
         $this->error = $error;
         $this->filter = $filter;
     }
-    
+
     /**
      * @OA\Put(
-     *   path="/roles/update/{roleId}",
+     *   path="/posts/uptdate/{postId}",
      *   tags={"Posts"},
-     *   summary="Update role",
-     *   operationId="roles_update",
+     *   summary="Update post",
+     *   operationId="posts_create",
      *
      *   @OA\Parameter(
-     *       name="roleId",
+     *       name="postId",
      *       in="path",
      *       required=true,
      *       @OA\Schema(
@@ -45,8 +46,8 @@ class UpdateHandler implements RequestHandlerInterface
      *       ),
      *   ),
      *   @OA\RequestBody(
-     *     description="Update role",
-     *     @OA\JsonContent(ref="#/components/schemas/RoleSave"),
+     *     description="Update post",
+     *     @OA\JsonContent(ref="#/components/schemas/PostSave"),
      *   ),
      *   @OA\Response(
      *     response=200,
@@ -60,12 +61,15 @@ class UpdateHandler implements RequestHandlerInterface
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $user = $request->getAttribute(UserInterface::class); // get id from current token
+        $userId = $user->getId();
         $this->filter->setInputData($request->getParsedBody());
         $data = array();
         $response = array();
         if ($this->filter->isValid()) {
             $this->dataManager->setInputFilter($this->filter);
-            $data = $this->dataManager->getSaveData(RoleSave::class, 'roles');
+            $data = $this->dataManager->getSaveData(PostSave::class, 'posts');
+            $data['posts']['authorId'] = $userId;
             $this->postModel->update($data);
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);

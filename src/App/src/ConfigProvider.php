@@ -58,6 +58,9 @@ class ConfigProvider
                     // Permissions
                     Filter\Permissions\SaveFilter::class => Filter\Permissions\SaveFilterFactory::class,
                     Filter\Permissions\DeleteFilter::class => Filter\Permissions\DeleteFilterFactory::class,
+                    // Posts
+                    Filter\Posts\SaveFilter::class => Filter\Posts\SaveFilterFactory::class,
+                    Filter\Posts\DeleteFilter::class => Filter\Posts\DeleteFilterFactory::class,
                     // Roles
                     Filter\Roles\SaveFilter::class => Filter\Roles\SaveFilterFactory::class,
                     Filter\Roles\DeleteFilter::class => Filter\Roles\DeleteFilterFactory::class,
@@ -219,8 +222,12 @@ class ConfigProvider
                     $cacheStorage = $container->get(StorageInterface::class);
                     $columnFilters = $container->get(ColumnFiltersInterface::class);
                     $posts = new TableGateway('posts', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $postsTags = new TableGateway('postTags', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $postsCategories = new TableGateway('postCategories', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     return new Model\PostModel(
                         $posts,
+                        $postsTags,
+                        $postsCategories,
                         $cacheStorage,
                         $columnFilters
                     );

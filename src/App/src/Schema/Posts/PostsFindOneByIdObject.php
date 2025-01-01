@@ -36,12 +36,17 @@ class PostsFindOneByIdObject
      * @var string
      * @OA\Property()
      */
-    public $content;
+    public $contentJson;
     /**
      * @var string
      * @OA\Property()
      */
-    public $published;
+    public $contentHtml;
+    /**
+     * @var string
+     * @OA\Property()
+     */
+    public $publishStatus;
     /**
     *  @var array
     *  @OA\Property(

@@ -25,13 +25,13 @@ class FindOneByIdHandler implements RequestHandlerInterface
 
     /**
      * @OA\Get(
-     *   path="/roles/findOneById/{roleId}",
+     *   path="/posts/findOneById/{postId}",
      *   tags={"Posts"},
-     *   summary="Find item data",
-     *   operationId="roles_findOneById",
+     *   summary="Find one post data",
+     *   operationId="posts_findOneById",
      *
      *   @OA\Parameter(
-     *       name="roleId",
+     *       name="postId",
      *       in="path",
      *       required=true,
      *       @OA\Schema(
@@ -43,12 +43,16 @@ class FindOneByIdHandler implements RequestHandlerInterface
      *     description="Successful operation",
      *     @OA\JsonContent(ref="#/components/schemas/PostsFindOneById"),
      *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="No result found"
+     *   )
      *)
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $roleId = $request->getAttribute("roleId");
-        $row = $this->postModel->findOneById($roleId);
+        $postId = $request->getAttribute("postId");
+        $row = $this->postModel->findOneById($postId);
         if ($row) {
             $data = $this->dataManager->getViewData(PostsFindOneById::class, $row);
             return new JsonResponse($data);   

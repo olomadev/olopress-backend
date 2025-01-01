@@ -6,9 +6,11 @@ namespace App\Filter\Posts;
 
 use Laminas\Filter\ToInt;
 use Laminas\Validator\Uuid;
+use Laminas\Validator\InArray;
 use App\Filter\InputFilter;
 use App\Filter\ObjectInputFilter;
 use App\Filter\CollectionInputFilter;
+use App\Filter\Utils\ToJson;
 use App\Validator\Db\RecordExists;
 use App\Validator\Db\NoRecordExists;
 use Laminas\Validator\StringLength;
@@ -78,11 +80,18 @@ class SaveFilter extends InputFilter
             ],
         ]);
         $this->add([
-            'name' => 'content',
+            'name' => 'contentJson',
+            'required' => true,
+            'filters' => [
+                ['name' => ToJson::class],
+            ],
+        ]);
+        $this->add([
+            'name' => 'contentHtml',
             'required' => true,
         ]);
         $this->add([
-            'name' => 'published',
+            'name' => 'publishStatus',
             'required' => true,
             'validators' => [
                 [
@@ -93,7 +102,10 @@ class SaveFilter extends InputFilter
                 ],
             ],
         ]);
-
+        $this->add([
+            'name' => 'publishedAt',
+            'required' => false,
+        ]);
         // Categories Input filter
         //
         $collection = $this->filter->get(CollectionInputFilter::class);
@@ -106,7 +118,7 @@ class SaveFilter extends InputFilter
             ],
         ]);
         $collection->setInputFilter($inputFilter);
-        $this->add($collection, 'postCategories');
+        $this->add($collection, 'categories');
 
         // Tags Input filter
         //
@@ -120,7 +132,7 @@ class SaveFilter extends InputFilter
             ],
         ]);
         $collection->setInputFilter($inputFilter);
-        $this->add($collection, 'tagCategories');
+        $this->add($collection, 'tags');
 
         $this->setData($data);
     }
