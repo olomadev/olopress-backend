@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\Handler\Common\Months;
+namespace App\Handler\Tags;
 
-use App\Model\CommonModel;
+use App\Model\TagModel;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class FindAllHandler implements RequestHandlerInterface
+class FindAllByPagingHandler implements RequestHandlerInterface
 {
-    public function __construct(private CommonModel $commonModel)
+    public function __construct(private TagModel $tagModel)
     {
-        $this->commonModel = $commonModel;
+        $this->tagModel = $tagModel;
     }
 
     /**
      * @OA\Get(
-     *   path="/months/findAll",
-     *   tags={"Common"},
-     *   summary="Find all months",
-     *   operationId="months_findAll",
+     *   path="/tags/findAllByPaging",
+     *   tags={"Tags"},
+     *   summary="Find all tags",
+     *   operationId="tags_findAllByPaging",
      *   
      *   @OA\Response(
      *     response=200,
      *     description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/CommonFindAll"),
+     *     @OA\JsonContent(ref="#/components/schemas/TagsFindAllByPaging"),
      *   ),
      *   @OA\Response(
      *      response=404,
@@ -37,7 +37,7 @@ class FindAllHandler implements RequestHandlerInterface
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $data = $this->commonModel->findMonths();
+        $data = $this->tagModel->findAllByPaging();
         return new JsonResponse([
             'data' => $data,
         ]);

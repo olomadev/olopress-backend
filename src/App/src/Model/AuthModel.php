@@ -17,11 +17,6 @@ class AuthModel
         $this->adapter = $adapter;
     }
 
-    /**
-     * Find all permissions before the login 
-     * 
-     * @return array
-     */
     public function findAllPermissions() : array
     {
         $sql = new Sql($this->adapter);
@@ -48,12 +43,6 @@ class AuthModel
         return $permissions;
     }
 
-    /**
-     * Find user roles after login
-     * 
-     * @param  string $userId user id
-     * @return array
-     */
     public function findRolesById(string $userId) : array
     {
         $sql = new Sql($this->adapter);

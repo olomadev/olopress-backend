@@ -13,25 +13,18 @@ use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Db\TableGateway\TableGatewayInterface;
 
+use generateRandomAlphaLowerCase;
+
 class PostModel
 {
     private $conn;
     private $adapter;
 
-    /**
-     * Constructor
-     * 
-     * @param TableGatewayInterface $posts object
-     * @param TableGatewayInterface $postTags object
-     * @param TableGatewayInterface $postCategories object
-     * @param TableGatewayInterface $rolePermissions object
-     * @param StorageInterface $cache object
-     * @param ColumnFilters object
-     */
     public function __construct(
         private TableGatewayInterface $posts,
         private TableGatewayInterface $postTags,
         private TableGatewayInterface $postCategories,
+        private TableGatewayInterface $tags,
         private StorageInterface $cache,
         private ColumnFiltersInterface $columnFilters
     )
@@ -39,21 +32,11 @@ class PostModel
         $this->posts = $posts;
         $this->postTags = $postTags;
         $this->postCategories = $postCategories;
+        $this->tags = $tags;
         $this->cache = $cache;
         $this->adapter = $posts->getAdapter();
         $this->columnFilters = $columnFilters;
         $this->conn = $this->adapter->getDriver()->getConnection();
-    }
-
-    public function findAll() : array
-    {
-        $select = $this->posts->getSql()->select();
-        $resultSet = $this->posts->selectWith($select);
-        $result = array();
-        foreach ($resultSet as $row) {
-            $result[] = $row;
-        }
-        return $result;
     }
 
     public function findAllBySelect()
@@ -65,6 +48,7 @@ class PostModel
             'authorId' => new Expression("JSON_OBJECT('id', u.userId, 'name', CONCAT(u.firstname, ' ', u.lastname))"),
             'title',
             'permalink',
+            'contentHtml',
             'publishStatus',
             'createdAt',
         ]);
@@ -130,32 +114,62 @@ class PostModel
         $select->from(['p' => 'posts']);
         $select->join(['u' => 'users'], 'u.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
         $select->where(['p.postId' => $postId]);
-
+        //
         // echo $select->getSqlString($this->adapter->getPlatform());
         // die;
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = $statement->execute();
         $row = $resultSet->current();
-        // $statement->getResource()->closeCursor();
+        if (! empty($row['contentJson'])) {
+            $row['contentJson'] = json_decode($row['contentJson'], true);
+        }
+        $statement->getResource()->closeCursor();
+        //
+        // tags
+        // 
+        $sql    = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(
+            [
+                'id' => 'tagId',
+            ]
+        );
+        $select->from(['pt' => 'postTags']);
+        $select->join(['t' => 'tags'], 'pt.tagId = t.tagId', ['name' => 'tagName'], $select::JOIN_LEFT);
+        $select->where(['postId' => $postId]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $postTags = iterator_to_array($resultSet);
+        $statement->getResource()->closeCursor();
+        $row['tags'] = $postTags;
+        //
+        // categories
+        // 
+        $sql    = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(
+            [
+                'id' => 'categoryId',
+            ]
+        );
+        $select->from(['pc' => 'postCategories']);
+        $select->join(['c' => 'categories'], 'pc.categoryId = c.categoryId', ['name'], $select::JOIN_LEFT);
+        $select->where(['postId' => $postId]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $postCategories = iterator_to_array($resultSet);
+        $statement->getResource()->closeCursor();
+        $row['categories'] = $postCategories;
         return $row;
     }
 
-    public function findTags() : array
-    {
-
-    }
-    
-    public function findCategories() : array
-    {
-
-    }
-
-    public function create(array $data)
+    public function create(array $data) : string
     {
         $postId = $data['id'];
         try {
             $this->conn->beginTransaction();
             $data['posts']['postId'] = $postId;
+            $data['posts']['permalink'] = $this->updatePermalink($postId, $data['posts']['permalink']);
             $data['posts']['createdAt'] = date("Y-m-d H:i:s");
             $this->posts->insert($data['posts']);
             $this->saveItems($data);
@@ -165,16 +179,32 @@ class PostModel
             $this->conn->rollback();
             throw $e;
         }
+        return $data['posts']['permalink'];
     }
 
-    public function update(array $data)
+    public function update(array $data) : string
+    {
+        $postId = $data['id'];
+        try {
+            $this->conn->beginTransaction();
+            $data['posts']['permalink'] = $this->updatePermalink($postId, $data['posts']['permalink']);
+            $this->posts->update($data['posts'], ['postId' => $postId]);
+            $this->saveItems($data);
+            $this->deleteCache();
+            $this->conn->commit();
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            throw $e;
+        }
+        return $data['posts']['permalink'];
+    }
+
+    public function publish(array $data)
     {
         $postId = $data['id'];
         try {
             $this->conn->beginTransaction();
             $this->posts->update($data['posts'], ['postId' => $postId]);
-            $this->saveItems($data);
-            $this->deleteCache();
             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
@@ -203,17 +233,67 @@ class PostModel
         $this->postTags->delete(['postId' => $postId]);
         $this->postCategories->delete(['postId' => $postId]);
         if (! empty($data['tags'])) {
+            $findExistingTagIds = $this->findExistingTagsInDb($data['tags']);
             foreach ($data['tags'] as $val) {
-                $val['postId'] = $postId;
-                $this->postTags->insert($val);
+                $tags = array();
+                $tags['postId'] = $postId;
+                $tags['tagId'] = $val['id'];
+                if (! in_array($val['id'], $findExistingTagIds)) { // if it's a new tag we need insert to db
+                    $this->tags->insert(['tagId' => $val['id'], 'tagName' => trim($val['name'])]);
+                }
+                $this->postTags->insert($tags);
             }
         }
         if (! empty($data['categories'])) {
             foreach ($data['categories'] as $val) {
-                $val['postId'] = $postId;
-                $this->postCategories->insert($val);
+                $cats = array();
+                $cats['postId'] = $postId;
+                $cats['categoryId'] = $val['id'];
+                $this->postCategories->insert($cats);
             }
         }
+    }
+
+    private function updatePermalink(string $postId, string $permalink)
+    {
+        $sql = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns([
+            'permalink',
+        ]);
+        $select->from(['p' => 'posts']);
+        $select->where->equalTo('permalink', $permalink);
+        $select->where->notEqualTo('postId', $postId);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $row = $resultSet->current();
+        $statement->getResource()->closeCursor();
+        if ($row) {
+            return $row['permalink'].'-'.generateRandomAlphaLowerCase(6);
+        }
+        return $permalink;
+    }
+
+    private function findExistingTagsInDb($tags) : array
+    {
+        $tagIds = array_column($tags, 'id');
+        $sql    = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(
+            [
+                'id' => 'tagId',
+            ]
+        );
+        $select->from(['t' => 'tags']);
+        $select->where->in('tagId', $tagIds);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $results = iterator_to_array($resultSet);
+        $statement->getResource()->closeCursor();
+        if (! empty($results[0]) && ! empty($results[0]['id'])) {
+            return array_column($results, 'id');    
+        }
+        return array();
     }
 
     private function deleteCache()

@@ -63,6 +63,7 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     // Posts (private)
     $app->route('/api/posts/create', [...$auth, ...[App\Handler\Posts\CreateHandler::class]], ['POST']);
     $app->route('/api/posts/update/:postId', [...$auth, ...[App\Handler\Posts\UpdateHandler::class]], ['PUT']);
+    $app->route('/api/posts/publish/:postId', [...$auth, ...[App\Handler\Posts\PublishHandler::class]], ['PATCH']);
     $app->route('/api/posts/delete/:postId', [...$auth, ...[App\Handler\Posts\DeleteHandler::class]], ['DELETE']);
     $app->route('/api/posts/findAll', [App\Handler\Posts\FindAllHandler::class], ['GET']);
     $app->route('/api/posts/findAllByPaging', [...$auth, ...[App\Handler\Posts\FindAllByPagingHandler::class]], ['GET']);
@@ -96,6 +97,12 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/permissions/delete/:permId', [...$auth, [App\Handler\Permissions\DeleteHandler::class]], ['DELETE']);
     $app->route('/api/permissions/findAll', [JwtAuthenticationMiddleware::class, App\Handler\Permissions\FindAllHandler::class], ['GET']);
     $app->route('/api/permissions/findAllByPaging', [...$auth, [App\Handler\Permissions\FindAllByPagingHandler::class]], ['GET']);
+
+    // Tags
+    $app->route('/api/tags/findAll', [...$auth, ...[App\Handler\Tags\FindAllHandler::class]], ['GET']);
+    $app->route('/api/tags/findAllByPaging', [...$auth, ...[App\Handler\Tags\FindAllByPagingHandler::class]], ['GET']);
+    $app->route('/api/tags/create', [...$auth, ...[App\Handler\Tags\CreateHandler::class]], ['POST']);
+    $app->route('/api/tags/update/:tagId', [...$auth, ...[App\Handler\Tags\UpdateHandler::class]], ['PUT']);
 
     // FailedLogins (private)
     $app->route('/api/failedlogins/delete/:loginId', [...$auth, [App\Handler\FailedLogins\DeleteHandler::class]], ['DELETE']);

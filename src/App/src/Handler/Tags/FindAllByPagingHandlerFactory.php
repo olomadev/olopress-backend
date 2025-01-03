@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Handler\Common\Months;
+namespace App\Handler\Tags;
 
-use App\Model\CommonModel;
+use App\Model\TagModel;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class FindAllHandlerFactory
+class FindAllByPagingHandlerFactory
 {
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
-        $commonModel = $container->get(CommonModel::class);
-        return new FindAllHandler($commonModel);
+        return new FindAllByPagingHandler($container->get(TagModel::class));
     }
 }

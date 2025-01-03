@@ -22,14 +22,6 @@ class RoleModel
     private $adapter;
     private $columnFilters;
 
-    /**
-     * Constructor
-     * 
-     * @param TableGatewayInterface $roles object
-     * @param TableGatewayInterface $rolePermissions object
-     * @param StorageInterface $cache object
-     * @param ColumnFilters object
-     */
     public function __construct(
         TableGatewayInterface $roles,
         TableGatewayInterface $rolePermissions,

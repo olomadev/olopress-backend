@@ -52,6 +52,7 @@ class UpdateHandler implements RequestHandlerInterface
      *   @OA\Response(
      *     response=200,
      *     description="Successful operation",
+     *     @OA\JsonContent(ref="#/components/schemas/PostSaveResponse"),
      *   ),
      *   @OA\Response(
      *      response=400,
@@ -70,7 +71,7 @@ class UpdateHandler implements RequestHandlerInterface
             $this->dataManager->setInputFilter($this->filter);
             $data = $this->dataManager->getSaveData(PostSave::class, 'posts');
             $data['posts']['authorId'] = $userId;
-            $this->postModel->update($data);
+            $response['data']['permalink'] = $this->postModel->update($data);
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);
         }

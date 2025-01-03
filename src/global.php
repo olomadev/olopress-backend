@@ -151,7 +151,27 @@ function generateRandomAlpha($length = 10)
     return generateRandom('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $length);
 }
 /**
- * Generate random string
+ * Generate random alpha lowercase string
+ *
+ * @param  integer $length length
+ * @return string
+ */
+function generateRandomAlphaLowerCase($length = 10)
+{
+    return generateRandom('abcdefghijklmnopqrstuvwxyz', $length);
+}
+/**
+ * Generate random uppercase string
+ *
+ * @param  integer $length length
+ * @return string
+ */
+function generateRandomStringLowerCase($length = 10)
+{
+    return generateRandom('0123456789abcdefghijklmnopqrstuvwxyz', $length);
+}
+/**
+ * Generate random uppercase string
  *
  * @param  integer $length length
  * @return string

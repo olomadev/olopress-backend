@@ -33,7 +33,7 @@ class PostsFindOneByIdObject
      */
     public $permalink;
     /**
-     * @var string
+     * @var array
      * @OA\Property()
      */
     public $contentJson;
@@ -48,16 +48,25 @@ class PostsFindOneByIdObject
      */
     public $publishStatus;
     /**
+     * @var string
+     * @OA\Property()
+     */
+    public $publishedAt;
+    /**
     *  @var array
     *  @OA\Property(
     *      type="array",
     *      @OA\Items(
     *           @OA\Property(
-    *             property="categoryId",
+    *             property="id",
     *             type="string",
-    *           )
+    *           ),
+    *           @OA\Property(
+    *             property="name",
+    *             type="string",
+    *           ),
     *     ),
-    *  );
+    *  )
     */
     public $categories;
     /**
@@ -66,11 +75,15 @@ class PostsFindOneByIdObject
     *      type="array",
     *      @OA\Items(
     *           @OA\Property(
-    *             property="permId",
+    *             property="id",
     *             type="string",
-    *           )
+    *           ),
+    *           @OA\Property(
+    *             property="name",
+    *             type="string",
+    *           ),
     *     ),
-    *  );
+    *  )
     */
     public $tags;
 }

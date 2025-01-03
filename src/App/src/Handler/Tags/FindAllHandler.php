@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Handler\Common\Years;
+namespace App\Handler\Tags;
 
-use App\Model\CommonModel;
+use App\Model\TagModel;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -12,17 +12,17 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class FindAllHandler implements RequestHandlerInterface
 {
-    public function __construct(private CommonModel $commonModel)
+    public function __construct(private TagModel $tagModel)
     {
-        $this->commonModel = $commonModel;
+        $this->tagModel = $tagModel;
     }
 
     /**
      * @OA\Get(
-     *   path="/years/findAll",
-     *   tags={"Common"},
-     *   summary="Find all years",
-     *   operationId="years_findAll",
+     *   path="/tags/findAll",
+     *   tags={"Tags"},
+     *   summary="Find all tags",
+     *   operationId="tags_findAll",
      *   
      *   @OA\Response(
      *     response=200,
@@ -37,7 +37,7 @@ class FindAllHandler implements RequestHandlerInterface
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $data = $this->commonModel->findYears();
+        $data = $this->tagModel->findAll($request->getQueryParams());
         return new JsonResponse([
             'data' => $data,
         ]);

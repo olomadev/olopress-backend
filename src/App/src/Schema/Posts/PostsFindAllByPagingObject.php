@@ -38,6 +38,11 @@ class PostsFindAllByPagingObject
      */
     public $publishStatus;
     /**
+     * @var string
+     * @OA\Property()
+     */
+    public $publishedAt;
+    /**
     *  @var array
     *  @OA\Property(
     *      type="array",

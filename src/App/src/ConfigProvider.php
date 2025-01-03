@@ -64,6 +64,9 @@ class ConfigProvider
                     // Roles
                     Filter\Roles\SaveFilter::class => Filter\Roles\SaveFilterFactory::class,
                     Filter\Roles\DeleteFilter::class => Filter\Roles\DeleteFilterFactory::class,
+                    // Tags
+                    Filter\Tags\SaveFilter::class => Filter\Tags\SaveFilterFactory::class,
+                    Filter\Tags\DeleteFilter::class => Filter\Tags\DeleteFilterFactory::class,
                     // Users
                     Filter\Users\SaveFilter::class => Filter\Users\SaveFilterFactory::class,
                     Filter\Users\DeleteFilter::class => Filter\Users\DeleteFilterFactory::class,
@@ -112,10 +115,7 @@ class ConfigProvider
                 // common
                 Handler\Common\Actions\FindAllHandler::class => Handler\Common\Actions\FindAllHandlerFactory::class,
                 Handler\Common\Methods\FindAllHandler::class => Handler\Common\Methods\FindAllHandlerFactory::class,
-                Handler\Common\Stream\EventsHandler::class => Handler\Common\Stream\EventsHandlerFactory::class,
                 Handler\Common\Locales\FindAllHandler::class => Handler\Common\Locales\FindAllHandlerFactory::class,
-                Handler\Common\Years\FindAllHandler::class => Handler\Common\Years\FindAllHandlerFactory::class,
-                Handler\Common\Months\FindAllHandler::class => Handler\Common\Months\FindAllHandlerFactory::class,
                 Handler\Common\Cities\FindAllHandler::class => Handler\Common\Cities\FindAllHandlerFactory::class,
                 Handler\Common\Countries\FindAllHandler::class => Handler\Common\Countries\FindAllHandlerFactory::class,
                 Handler\Common\Currencies\FindAllHandler::class => Handler\Common\Currencies\FindAllHandlerFactory::class,
@@ -169,6 +169,12 @@ class ConfigProvider
                 Handler\Permissions\DeleteHandler::class => Handler\Permissions\DeleteHandlerFactory::class,
                 Handler\Permissions\FindAllHandler::class => Handler\Permissions\FindAllHandlerFactory::class,
                 Handler\Permissions\FindAllByPagingHandler::class => Handler\Permissions\FindAllByPagingHandlerFactory::class,
+                // tags
+                Handler\Tags\CreateHandler::class => Handler\Tags\CreateHandlerFactory::class,
+                Handler\Tags\UpdateHandler::class => Handler\Tags\UpdateHandlerFactory::class,
+                Handler\Tags\DeleteHandler::class => Handler\Tags\DeleteHandlerFactory::class,
+                Handler\Tags\FindAllHandler::class => Handler\Tags\FindAllHandlerFactory::class,
+                Handler\Tags\FindAllByPagingHandler::class => Handler\Tags\FindAllByPagingHandlerFactory::class,
                 // failed logins
                 Handler\FailedLogins\DeleteHandler::class => Handler\FailedLogins\DeleteHandlerFactory::class,
                 Handler\FailedLogins\FindAllByPagingHandler::class => Handler\FailedLogins\FindAllByPagingHandlerFactory::class,
@@ -221,6 +227,7 @@ class ConfigProvider
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $cacheStorage = $container->get(StorageInterface::class);
                     $columnFilters = $container->get(ColumnFiltersInterface::class);
+                    $tags = new TableGateway('tags', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $posts = new TableGateway('posts', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $postsTags = new TableGateway('postTags', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $postsCategories = new TableGateway('postCategories', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
@@ -228,6 +235,7 @@ class ConfigProvider
                         $posts,
                         $postsTags,
                         $postsCategories,
+                        $tags,
                         $cacheStorage,
                         $columnFilters
                     );
@@ -244,6 +252,12 @@ class ConfigProvider
                         $cacheStorage,
                         $columnFilters
                     );
+                },
+                Model\TagModel::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $tags = new TableGateway('tags', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $columnFilters = $container->get(ColumnFiltersInterface::class);
+                    return new Model\TagModel($tags, $columnFilters);
                 },
                 Model\TokenModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);

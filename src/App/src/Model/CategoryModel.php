@@ -32,9 +32,10 @@ class CategoryModel
         $this->conn = $this->adapter->getDriver()->getConnection();
     }
 
-    public function findAll()
+    public function findAll(array $get)
     {
-        $key = CACHE_ROOT_KEY.Self::class.':'.__FUNCTION__;
+        $visibility = empty($get['visibility']) ? 'private' : 'public';
+        $key = CACHE_ROOT_KEY.Self::class.':'.$visibility.':findAll';
         if ($this->cache->hasItem($key)) {
             return $this->cache->getItem($key);
         } 
@@ -48,6 +49,9 @@ class CategoryModel
             'rgt',
         ]);
         $select->from(['c' => 'categories']);
+        if ($visibility == 'public') {
+            $select->where->notEqualTo('parentId', 0); // don't show main category name
+        }
         $nest = $select->where->nest();
             $nest->and->between('c.lft', new Expression('c.lft'), new Expression('c.rgt'));
         $nest->unnest();
@@ -66,7 +70,7 @@ class CategoryModel
 
     public function findAllByPaging()
     {
-        $key = CACHE_ROOT_KEY.Self::class.':'.__FUNCTION__;
+        $key = CACHE_ROOT_KEY.Self::class.':findAllByPaging';
         if ($this->cache->hasItem($key)) {
             return $this->cache->getItem($key);
         }        
@@ -324,7 +328,8 @@ class CategoryModel
 
     private function deleteCache()
     {
-        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':findAll');
+        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':public:findAll');
+        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':private:findAll');
         $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':findAllByPaging');
     }
 

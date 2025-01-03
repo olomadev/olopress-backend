@@ -6,6 +6,7 @@ namespace App\Filter\Posts;
 
 use Laminas\Filter\ToInt;
 use Laminas\Validator\Uuid;
+use Laminas\Validator\Date;
 use Laminas\Validator\InArray;
 use App\Filter\InputFilter;
 use App\Filter\ObjectInputFilter;
@@ -16,6 +17,8 @@ use App\Validator\Db\NoRecordExists;
 use Laminas\Validator\StringLength;
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\InputFilter\InputFilterPluginManager;
+
+use createGuid;
 
 class SaveFilter extends InputFilter
 {
@@ -30,6 +33,8 @@ class SaveFilter extends InputFilter
 
     public function setInputData(array $data)
     {
+        $data['tags'] = $this->filterTags($data['tags']);
+
         $this->add([
             'name' => 'id',
             'required' => true,
@@ -105,6 +110,15 @@ class SaveFilter extends InputFilter
         $this->add([
             'name' => 'publishedAt',
             'required' => false,
+            'validators' => [
+                [
+                    'name' => Date::class,
+                    'options' => [
+                        'format' => 'Y-m-d H:i:s',
+                        'strict' => true,
+                    ],
+                ],
+            ]
         ]);
         // Categories Input filter
         //
@@ -131,9 +145,29 @@ class SaveFilter extends InputFilter
                 ['name' => Uuid::class],
             ],
         ]);
+        $inputFilter->add([
+            'name' => 'name',
+            'required' => false,
+        ]);
         $collection->setInputFilter($inputFilter);
         $this->add($collection, 'tags');
 
         $this->setData($data);
     }
+
+    private function filterTags($tags)
+    {
+        $i = 0;
+        $newTagValues = array(); // if tag has not got id then add
+        foreach ((array)$tags as $key => $val) {
+            if (empty($val['id'])) {
+                $newTagValues[$i] = ['id' => createGuid(), 'name' => $val];
+            } else {
+                $newTagValues[$i] = $val;
+            }
+            ++$i;
+        }
+        return $newTagValues;
+    }
+
 }
