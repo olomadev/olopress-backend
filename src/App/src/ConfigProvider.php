@@ -51,7 +51,9 @@ class ConfigProvider
                     Filter\Categories\SaveFilter::class => Filter\Categories\SaveFilterFactory::class,
                     Filter\Categories\DeleteFilter::class => Filter\Categories\DeleteFilterFactory::class,
                     // Files
-                    Filter\Files\ReadFileFilter::class => Filter\Files\ReadFileFilterFactory::class,
+                    Filter\Files\SaveFilter::class => Filter\Files\SaveFilterFactory::class,
+                    Filter\Files\DeleteFilter::class => Filter\Files\DeleteFilterFactory::class,
+                    Filter\Files\DisplayFilter::class => Filter\Files\DisplayFilterFactory::class,
                     // Failed Logins
                     Filter\FailedLogins\SaveFilter::class => Filter\FailedLogins\SaveFilterFactory::class,
                     Filter\FailedLogins\DeleteFilter::class => Filter\FailedLogins\DeleteFilterFactory::class,
@@ -60,6 +62,7 @@ class ConfigProvider
                     Filter\Permissions\DeleteFilter::class => Filter\Permissions\DeleteFilterFactory::class,
                     // Posts
                     Filter\Posts\SaveFilter::class => Filter\Posts\SaveFilterFactory::class,
+                    Filter\Posts\PublishFilter::class => Filter\Posts\PublishFilterFactory::class,
                     Filter\Posts\DeleteFilter::class => Filter\Posts\DeleteFilterFactory::class,
                     // Roles
                     Filter\Roles\SaveFilter::class => Filter\Roles\SaveFilterFactory::class,
@@ -120,8 +123,6 @@ class ConfigProvider
                 Handler\Common\Countries\FindAllHandler::class => Handler\Common\Countries\FindAllHandlerFactory::class,
                 Handler\Common\Currencies\FindAllHandler::class => Handler\Common\Currencies\FindAllHandlerFactory::class,
                 Handler\Common\AreaCodes\FindAllHandler::class => Handler\Common\AreaCodes\FindAllHandlerFactory::class,
-                Handler\Common\Files\FindOneByIdHandler::class => Handler\Common\Files\FindOneByIdHandlerFactory::class,
-                Handler\Common\Files\ReadOneByIdHandler::class => Handler\Common\Files\ReadOneByIdHandlerFactory::class,
 
                 // auth
                 Handler\Auth\TokenHandler::class => Handler\Auth\TokenHandlerFactory::class,
@@ -141,9 +142,14 @@ class ConfigProvider
                 Handler\Categories\DeleteHandler::class => Handler\Categories\DeleteHandlerFactory::class,
                 Handler\Categories\FindAllHandler::class => Handler\Categories\FindAllHandlerFactory::class,
                 Handler\Categories\FindAllByPagingHandler::class => Handler\Categories\FindAllByPagingHandlerFactory::class,
+                // files
+                Handler\Files\CreateHandler::class => Handler\Files\CreateHandlerFactory::class,
+                Handler\Files\DeleteHandler::class => Handler\Files\DeleteHandlerFactory::class,
+                Handler\Files\DisplayByNameHandler::class => Handler\Files\DisplayByNameHandlerFactory::class,
                 // posts
                 Handler\Posts\CreateHandler::class => Handler\Posts\CreateHandlerFactory::class,
                 Handler\Posts\UpdateHandler::class => Handler\Posts\UpdateHandlerFactory::class,
+                Handler\Posts\PublishHandler::class => Handler\Posts\PublishHandlerFactory::class,
                 Handler\Posts\DeleteHandler::class => Handler\Posts\DeleteHandlerFactory::class,
                 Handler\Posts\FindOneByIdHandler::class => Handler\Posts\FindOneByIdHandlerFactory::class,
                 Handler\Posts\FindAllHandler::class => Handler\Posts\FindAllHandlerFactory::class,
@@ -209,8 +215,8 @@ class ConfigProvider
                 },
                 Model\FileModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
-                    $employeeFiles = new TableGateway('employeeFiles', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
-                    return new Model\FileModel($dbAdapter, $employeeFiles);
+                    $files = new TableGateway('files', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    return new Model\FileModel($files);
                 },
                 PermissionModelInterface::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);

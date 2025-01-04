@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filter\Categories;
+namespace App\Filter\Files;
 
 use App\Filter\InputFilter;
 use Laminas\Validator\Uuid;
@@ -21,15 +21,14 @@ class DeleteFilter extends InputFilter
     public function setInputData(array $data)
     {
         $this->add([
-            'name' => 'id',
+            'name' => 'fileName',
             'required' => true,
             'validators' => [
-                ['name' => Uuid::class],
                 [
                     'name' => RecordExists::class,
                     'options' => [
-                        'table'   => 'categories',
-                        'field'   => 'categoryId',
+                        'table'   => 'files',
+                        'field'   => 'fileName',
                         'adapter' => $this->adapter,
                     ]
                 ]

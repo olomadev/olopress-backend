@@ -11,7 +11,7 @@ use Laminas\Filter\StringTrim;
 use Laminas\Validator\Db\RecordExists;
 use Laminas\Db\Adapter\AdapterInterface;
 
-class ReadFileFilter extends InputFilter
+class DisplayFilter extends InputFilter
 {
     protected $adapter;
 
@@ -23,36 +23,20 @@ class ReadFileFilter extends InputFilter
     public function setInputData(array $data)
     {
         $this->add([
-            'name' => 'fileId',
+            'name' => 'fileName',
             'required' => true,
             'validators' => [
-                ['name' => Uuid::class],
                 [
                     'name' => RecordExists::class,
                     'options' => [
                         'table'   => 'files',
-                        'field'   => 'fileId',
+                        'field'   => 'fileName',
                         'adapter' => $this->adapter,
                     ]
                 ]
             ],
         ]);
-        $this->add([
-            'name' => 'tableName',
-            'required' => true,
-            'filters' => [
-                ['name' => StringTrim::class],
-            ],
-            'validators' => [
-                [
-                    'name' => InArray::class,
-                    'options' => [
-                        'haystack' => ['employeeFiles'],
-                    ],
-                ],
-            ],
-        ]);
-       
+        
         $this->setData($data);
     }
 }

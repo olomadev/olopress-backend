@@ -120,6 +120,9 @@ class PostModel
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = $statement->execute();
         $row = $resultSet->current();
+        if (false === $row) {
+            return;
+        }
         if (! empty($row['contentJson'])) {
             $row['contentJson'] = json_decode($row['contentJson'], true);
         }
@@ -141,7 +144,7 @@ class PostModel
         $resultSet = $statement->execute();
         $postTags = iterator_to_array($resultSet);
         $statement->getResource()->closeCursor();
-        $row['tags'] = $postTags;
+        $row['tags'] = is_array($postTags) ? $postTags : array();
         //
         // categories
         // 
@@ -159,7 +162,7 @@ class PostModel
         $resultSet = $statement->execute();
         $postCategories = iterator_to_array($resultSet);
         $statement->getResource()->closeCursor();
-        $row['categories'] = $postCategories;
+        $row['categories'] = is_array($postCategories) ? $postCategories : array();
         return $row;
     }
 

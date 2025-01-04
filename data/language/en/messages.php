@@ -10,6 +10,7 @@ return [
     'The uploaded file exceeds the upload_max_filesize directive in php.ini' => 'The uploaded file exceeds the upload max file size limit',
     'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form' => 'The uploaded file exceeds the upload max file size limit',
     'The uploaded file was only partially uploaded' => 'The uploaded file was only partially uploaded',
+    'No file found' => 'No file found',
     'No file was uploaded' => 'No file was uploaded',
     'Missing a temporary folder' => 'Missing a temporary folder',
     'Failed to write file to disk' => 'Failed to write file to disk',

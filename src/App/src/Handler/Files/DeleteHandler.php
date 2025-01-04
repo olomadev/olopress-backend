@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Handler\Categories;
+namespace App\Handler\Files;
 
-use App\Model\CategoryModel;
-use App\Filter\Categories\DeleteFilter;
+use App\Model\FileModel;
+use App\Filter\Files\DeleteFilter;
 use Olobase\Mezzio\Error\ErrorWrapperInterface as Error;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -15,31 +15,30 @@ use Psr\Http\Server\RequestHandlerInterface;
 class DeleteHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private CategoryModel $categoryModel,        
+        private FileModel $fileModel,        
         private DeleteFilter $filter,
         private Error $error,
     ) 
     {
-        $this->categoryModel = $categoryModel;
+        $this->fileModel = $fileModel;
         $this->filter = $filter;
         $this->error = $error;
     }
     
     /**
      * @OA\Delete(
-     *   path="/categories/delete/{categoryId}",
-     *   tags={"Categories"},
-     *   summary="Delete category",
-     *   operationId="categories_delete",
+     *   path="/files/delete",
+     *   tags={"Files"},
+     *   summary="Delete file",
+     *   operationId="files_delete",
      *
      *   @OA\Parameter(
-     *       in="path",
-     *       name="categoryId",
+     *       in="query",
+     *       name="fileName",
      *       required=true,
-     *       description="Category uuid",
+     *       description="File name",
      *       @OA\Schema(
      *           type="string",
-     *           format="uuid",
      *       ),
      *   ),
      *   @OA\Response(
@@ -52,8 +51,8 @@ class DeleteHandler implements RequestHandlerInterface
     {   
         $this->filter->setInputData($request->getQueryParams());
         if ($this->filter->isValid()) {
-            $this->categoryModel->delete(
-                $this->filter->getValue('id')
+            $this->fileModel->delete(
+                $this->filter->getValue('fileName')
             );
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);

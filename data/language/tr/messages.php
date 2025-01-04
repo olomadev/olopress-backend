@@ -10,6 +10,7 @@ return [
     'The uploaded file exceeds the upload_max_filesize directive in php.ini' => 'Yüklenen dosya, maksimum dosya boyutu sınırını aşıyor',
     'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form' => 'Yüklenen dosya, maksimum dosya boyutu sınırını aşıyor',
     'The uploaded file was only partially uploaded' => 'Yüklenen dosya yalnızca kısmen yüklendi',
+    'No file found' => 'Dosya bulunamadı',
     'No file was uploaded' => 'Dosya yüklenmedi',
     'Missing a temporary folder' => 'Geçici klasör eksik',
     'Failed to write file to disk' => 'Dosya diske yazılamadı',

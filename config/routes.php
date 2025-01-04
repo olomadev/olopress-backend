@@ -53,6 +53,11 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/account/update', [...$auth, ...[App\Handler\Account\UpdateHandler::class]], ['PUT']);
     $app->route('/api/account/updatePassword', [...$auth, ...[App\Handler\Account\UpdatePasswordHandler::class]], ['PUT']);
 
+    // Files
+    $app->route('/api/files/display', App\Handler\Files\DisplayByNameHandler::class, ['GET']);
+    $app->route('/api/files/create', [...$auth, ...[App\Handler\Files\CreateHandler::class]], ['POST']);
+    $app->route('/api/files/delete', [...$auth, ...[App\Handler\Files\DeleteHandler::class]], ['DELETE']);
+    
     // Categories
     $app->route('/api/categories/findAll', [...$auth, ...[App\Handler\Categories\FindAllHandler::class]], ['GET']);
     $app->route('/api/categories/findAllByPaging', [...$auth, ...[App\Handler\Categories\FindAllByPagingHandler::class]], ['GET']);
@@ -118,7 +123,5 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/locales/findAll', App\Handler\Common\Locales\FindAllHandler::class, ['GET']);
     $app->route('/api/months/findAll', App\Handler\Common\Months\FindAllHandler::class, ['GET']);
     $app->route('/api/countries/findAll', App\Handler\Common\Countries\FindAllHandler::class, ['GET']);
-    $app->route('/api/files/findOneById/:fileId', App\Handler\Common\Files\FindOneByIdHandler::class, ['GET']);
-    $app->route('/api/files/readOneById/:fileId', App\Handler\Common\Files\ReadOneByIdHandler::class, ['GET']);
 
 };

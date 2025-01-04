@@ -23,7 +23,7 @@ class SaveFilter extends InputFilter
     )
     {
         $this->filter = $filter;
-        $this->adapter  = $adapter;
+        $this->adapter = $adapter;
     }
 
     public function setInputData(array $data)
