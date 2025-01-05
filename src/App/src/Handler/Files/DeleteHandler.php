@@ -31,7 +31,7 @@ class DeleteHandler implements RequestHandlerInterface
      *   tags={"Files"},
      *   summary="Delete file",
      *   operationId="files_delete",
-     *
+     
      *   @OA\Parameter(
      *       in="query",
      *       name="fileName",
@@ -41,9 +41,22 @@ class DeleteHandler implements RequestHandlerInterface
      *           type="string",
      *       ),
      *   ),
+     *   @OA\Parameter(
+     *       in="query",
+     *       name="postId",
+     *       required=false,
+     *       description="Post id",
+     *       @OA\Schema(
+     *           type="string",
+     *       ),
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Successful operation",
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad request, returns to validation errors"
      *   )
      *)
      **/
@@ -52,7 +65,8 @@ class DeleteHandler implements RequestHandlerInterface
         $this->filter->setInputData($request->getQueryParams());
         if ($this->filter->isValid()) {
             $this->fileModel->delete(
-                $this->filter->getValue('fileName')
+                $this->filter->getValue('fileName'),
+                $this->filter->getValue('postId')
             );
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);

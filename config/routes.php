@@ -54,9 +54,12 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/account/updatePassword', [...$auth, ...[App\Handler\Account\UpdatePasswordHandler::class]], ['PUT']);
 
     // Files
-    $app->route('/api/files/display', App\Handler\Files\DisplayByNameHandler::class, ['GET']);
+    $app->route('/api/files/display', App\Handler\Files\FindByNameHandler::class, ['GET']);
     $app->route('/api/files/create', [...$auth, ...[App\Handler\Files\CreateHandler::class]], ['POST']);
     $app->route('/api/files/delete', [...$auth, ...[App\Handler\Files\DeleteHandler::class]], ['DELETE']);
+
+    // Featured images
+    $app->route('/api/featured-images/findAll', [...$auth, ...[App\Handler\FeaturedImages\FindAllHandler::class]], ['GET']);
     
     // Categories
     $app->route('/api/categories/findAll', [...$auth, ...[App\Handler\Categories\FindAllHandler::class]], ['GET']);

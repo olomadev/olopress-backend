@@ -25,6 +25,7 @@ class PostModel
         private TableGatewayInterface $postTags,
         private TableGatewayInterface $postCategories,
         private TableGatewayInterface $tags,
+        private TableGatewayInterface $files,
         private StorageInterface $cache,
         private ColumnFiltersInterface $columnFilters
     )
@@ -33,6 +34,7 @@ class PostModel
         $this->postTags = $postTags;
         $this->postCategories = $postCategories;
         $this->tags = $tags;
+        $this->files = $files;
         $this->cache = $cache;
         $this->adapter = $posts->getAdapter();
         $this->columnFilters = $columnFilters;
@@ -108,6 +110,7 @@ class PostModel
             'permalink',
             'contentJson',
             'publishStatus',
+            'featuredImageId',
             'publishedAt',
             'createdAt',
         ]);
@@ -217,43 +220,20 @@ class PostModel
 
     public function delete(string $postId)
     {
+        $postFiles = $this->findPostFiles($postId);
         try {
             $this->conn->beginTransaction();
             $this->posts->delete(['postId' => $postId]);
             $this->postTags->delete(['postId' => $postId]);
             $this->postCategories->delete(['postId' => $postId]);
+            foreach ($postFiles as $fileId) {
+                $this->files->delete(['fileId' => $fileId]);
+            }
             $this->deleteCache();
             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
             throw $e;
-        }
-    }
-
-    protected function saveItems(array $data)
-    {
-        $postId = $data['id'];
-        $this->postTags->delete(['postId' => $postId]);
-        $this->postCategories->delete(['postId' => $postId]);
-        if (! empty($data['tags'])) {
-            $findExistingTagIds = $this->findExistingTagsInDb($data['tags']);
-            foreach ($data['tags'] as $val) {
-                $tags = array();
-                $tags['postId'] = $postId;
-                $tags['tagId'] = $val['id'];
-                if (! in_array($val['id'], $findExistingTagIds)) { // if it's a new tag we need insert to db
-                    $this->tags->insert(['tagId' => $val['id'], 'tagName' => trim($val['name'])]);
-                }
-                $this->postTags->insert($tags);
-            }
-        }
-        if (! empty($data['categories'])) {
-            foreach ($data['categories'] as $val) {
-                $cats = array();
-                $cats['postId'] = $postId;
-                $cats['categoryId'] = $val['id'];
-                $this->postCategories->insert($cats);
-            }
         }
     }
 
@@ -297,6 +277,48 @@ class PostModel
             return array_column($results, 'id');    
         }
         return array();
+    }
+
+    private function saveItems(array $data)
+    {
+        $postId = $data['id'];
+        $this->postTags->delete(['postId' => $postId]);
+        $this->postCategories->delete(['postId' => $postId]);
+        if (! empty($data['tags'])) {
+            $findExistingTagIds = $this->findExistingTagsInDb($data['tags']);
+            foreach ($data['tags'] as $val) {
+                $tags = array();
+                $tags['postId'] = $postId;
+                $tags['tagId'] = $val['id'];
+                if (! in_array($val['id'], $findExistingTagIds)) { // if it's a new tag we need insert to db
+                    $this->tags->insert(['tagId' => $val['id'], 'tagName' => trim($val['name'])]);
+                }
+                $this->postTags->insert($tags);
+            }
+        }
+        if (! empty($data['categories'])) {
+            foreach ($data['categories'] as $val) {
+                $cats = array();
+                $cats['postId'] = $postId;
+                $cats['categoryId'] = $val['id'];
+                $this->postCategories->insert($cats);
+            }
+        }
+    }
+
+    private function findPostFiles(string $postId)
+    {
+        $sql = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(['fileId']);
+        $select->from(['pf' => 'postFiles']);
+        $select->where(['pf.postId' => $postId]);
+        $select->group('pf.fileId');
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $results = iterator_to_array($resultSet);
+        $statement->getResource()->closeCursor();
+        return $results ? array_column($results, 'fileId') : array();
     }
 
     private function deleteCache()

@@ -6,6 +6,7 @@ namespace App\Filter\Files;
 
 use App\Filter\InputFilter;
 use Laminas\Filter\ToInt;
+use Laminas\Validator\Uuid;
 use App\Filter\Utils\ToFile;
 use App\Validator\BlobFileData;
 use Laminas\Validator\InArray;
@@ -26,6 +27,20 @@ class SaveFilter extends InputFilter
 
     public function setInputData(array $data)
     {
+        $this->add([
+            'name' => 'postId',
+            'required' => false,
+            'validators' => [
+                ['name' => Uuid::class],
+            ],
+        ]);
+        $this->add([
+            'name' => 'fileId',
+            'required' => true,
+            'validators' => [
+                ['name' => Uuid::class],
+            ],
+        ]);
         $this->add([
             'name' => 'fileName',
             'required' => true,

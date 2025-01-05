@@ -39,11 +39,12 @@
         }
     },
     "require": {
-        "php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
+        "php": ">=8.1.0",
         "composer/package-versions-deprecated": "^1.10.99",
         "doctrine/annotations": "^1.13",
         "doctrine/orm": "^2.12",
         "firebase/php-jwt": "^6.2",
+        "intervention/image": "^3.10",
         "laminas/laminas-cache": "^3.1",
         "laminas/laminas-cache-storage-adapter-redis": "^2.1",
         "laminas/laminas-component-installer": "^3.0",

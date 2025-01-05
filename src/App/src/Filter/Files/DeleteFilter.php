@@ -21,18 +21,12 @@ class DeleteFilter extends InputFilter
     public function setInputData(array $data)
     {
         $this->add([
+            'name' => 'postId',
+            'required' => false,
+        ]);
+        $this->add([
             'name' => 'fileName',
             'required' => true,
-            'validators' => [
-                [
-                    'name' => RecordExists::class,
-                    'options' => [
-                        'table'   => 'files',
-                        'field'   => 'fileName',
-                        'adapter' => $this->adapter,
-                    ]
-                ]
-            ],
         ]);
        
         $this->setData($data);

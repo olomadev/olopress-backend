@@ -59,7 +59,7 @@ class CreateHandler implements RequestHandlerInterface
         if ($this->filter->isValid()) {
             $this->dataManager->setInputFilter($this->filter);
             $data = $this->dataManager->getSaveData(FileSave::class, 'files');
-            $response['data']['fileName'] = $this->fileModel->create($data);
+            $response['data'] = $this->fileModel->create($data);
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);
         }

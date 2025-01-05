@@ -53,6 +53,14 @@ class PostSave
      */
     public $publishedAt;
     /**
+    * @var object
+    * @OA\Property(
+    *     ref="#/components/schemas/ObjectId",
+    *     format="uuid",
+    * )
+    */
+    public $featuredImageId;
+    /**
     *  @var array
     *  @OA\Property(
     *      type="array",

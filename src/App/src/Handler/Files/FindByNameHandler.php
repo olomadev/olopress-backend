@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Laminas\I18n\Translator\TranslatorInterface as Translator;
 
-class DisplayByNameHandler implements RequestHandlerInterface
+class FindByNameHandler implements RequestHandlerInterface
 {
     public function __construct(
         private Translator $translator,
@@ -69,9 +69,9 @@ class DisplayByNameHandler implements RequestHandlerInterface
             $response->getBody()->write($row['fileData']);
             $response = $response->withHeader('Pragma', 'public');
             $response = $response->withHeader('Expires', 0);
-            $response = $response->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
-            // $response = $response->withHeader('Cache-Control', 'max-age=86400');
-            // $response = $response->withHeader('Expires', gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT');
+            $response = $response->withHeader('Cache-Control', 'max-age=86400');
+            $response = $response->withHeader('Expires', gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT');
+            $response = $response->withHeader('Content-Disposition', 'inline; filename='.$row['fileName']);
             $response = $response->withHeader('Content-Type', $row['fileType']); //  image/png
             return $response;
         } else {

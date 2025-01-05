@@ -120,6 +120,13 @@ class SaveFilter extends InputFilter
                 ],
             ]
         ]);
+        $objectFilter = $this->filter->get(ObjectInputFilter::class);
+        $objectFilter->add([
+            'name' => 'id',
+            'required' => false,
+        ]);
+        $this->add($objectFilter, 'featuredImageId');
+
         // Categories Input filter
         //
         $collection = $this->filter->get(CollectionInputFilter::class);
@@ -155,6 +162,15 @@ class SaveFilter extends InputFilter
         $this->setData($data);
     }
 
+    /**
+     * Problem: New tags do not have a guid id, but old tags in the database do. 
+     * So when the user sends a new tag, he/she sends a tag without an id.
+     *
+     * Solution: We recreate the raw input and if the tag id exists we create a new one.
+     * 
+     * @param  array $tags tags with/without ids
+     * @return array new tags with id
+     */
     private function filterTags($tags)
     {
         $i = 0;

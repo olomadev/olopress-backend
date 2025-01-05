@@ -12,7 +12,7 @@ use Olobase\Mezzio\Error\ErrorWrapperInterface as Error;
 use Psr\Http\Server\RequestHandlerInterface;
 use Laminas\I18n\Translator\TranslatorInterface as Translator;
 
-class DisplayByNameHandlerFactory
+class FindByNameHandlerFactory
 {
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
@@ -23,6 +23,6 @@ class DisplayByNameHandlerFactory
         $pluginManager = $container->get(InputFilterPluginManager::class);
         $inputFilter   = $pluginManager->get(DisplayFilter::class);
 
-        return new DisplayByNameHandler($translator, $fileModel, $inputFilter, $error);
+        return new FindByNameHandler($translator, $fileModel, $inputFilter, $error);
     }
 }

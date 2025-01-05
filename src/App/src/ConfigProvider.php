@@ -145,7 +145,9 @@ class ConfigProvider
                 // files
                 Handler\Files\CreateHandler::class => Handler\Files\CreateHandlerFactory::class,
                 Handler\Files\DeleteHandler::class => Handler\Files\DeleteHandlerFactory::class,
-                Handler\Files\DisplayByNameHandler::class => Handler\Files\DisplayByNameHandlerFactory::class,
+                Handler\Files\FindByNameHandler::class => Handler\Files\FindByNameHandlerFactory::class,
+                // featured-images
+                Handler\FeaturedImages\FindAllHandler::class => Handler\FeaturedImages\FindAllHandlerFactory::class,
                 // posts
                 Handler\Posts\CreateHandler::class => Handler\Posts\CreateHandlerFactory::class,
                 Handler\Posts\UpdateHandler::class => Handler\Posts\UpdateHandlerFactory::class,
@@ -216,7 +218,8 @@ class ConfigProvider
                 Model\FileModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $files = new TableGateway('files', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
-                    return new Model\FileModel($files);
+                    $postFiles = new TableGateway('postFiles', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    return new Model\FileModel($files, $postFiles);
                 },
                 PermissionModelInterface::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
@@ -234,6 +237,7 @@ class ConfigProvider
                     $cacheStorage = $container->get(StorageInterface::class);
                     $columnFilters = $container->get(ColumnFiltersInterface::class);
                     $tags = new TableGateway('tags', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $files = new TableGateway('files', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $posts = new TableGateway('posts', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $postsTags = new TableGateway('postTags', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $postsCategories = new TableGateway('postCategories', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
@@ -242,6 +246,7 @@ class ConfigProvider
                         $postsTags,
                         $postsCategories,
                         $tags,
+                        $files,
                         $cacheStorage,
                         $columnFilters
                     );

@@ -53,6 +53,11 @@ class PostsFindOneByIdObject
      */
     public $publishedAt;
     /**
+     * @var string
+     * @OA\Property()
+     */
+    public $featuredImageId;
+    /**
     *  @var array
     *  @OA\Property(
     *      type="array",
