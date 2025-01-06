@@ -9,7 +9,7 @@ use App\Filter\InputFilter;
 use App\Filter\Utils\ToFile;
 use Laminas\Validator\InArray;
 use App\Filter\ObjectInputFilter;
-use App\Validator\BlobFileUpload;
+use App\Validator\BlobFileData;
 use App\Validator\LatinCharacters;
 use Laminas\Filter\StringTrim;
 use App\Validator\Db\RecordExists;
@@ -139,7 +139,7 @@ class SaveFilter extends InputFilter
             ],
             'validators' => [
                 [
-                    'name' => BlobFileUpload::class,
+                    'name' => BlobFileData::class,
                     'options' => [
                         'operation' => HTTP_METHOD == 'POST' ? 'create' : 'update',
                         'max_allowed_upload' => 2097152,  // 2 mega bytes

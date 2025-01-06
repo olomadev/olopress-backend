@@ -159,13 +159,12 @@ class PostModel
             ]
         );
         $select->from(['pc' => 'postCategories']);
-        $select->join(['c' => 'categories'], 'pc.categoryId = c.categoryId', ['name'], $select::JOIN_LEFT);
         $select->where(['postId' => $postId]);
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = $statement->execute();
         $postCategories = iterator_to_array($resultSet);
         $statement->getResource()->closeCursor();
-        $row['categories'] = is_array($postCategories) ? $postCategories : array();
+        $row['categories'] = is_array($postCategories) ? array_column($postCategories, 'id') : array();
         return $row;
     }
 

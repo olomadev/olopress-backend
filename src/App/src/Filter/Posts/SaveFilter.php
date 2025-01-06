@@ -33,6 +33,7 @@ class SaveFilter extends InputFilter
 
     public function setInputData(array $data)
     {
+        $data['categories'] = $this->filterCategories($data['categories']);
         $data['tags'] = $this->filterTags($data['tags']);
 
         $this->add([
@@ -152,14 +153,28 @@ class SaveFilter extends InputFilter
                 ['name' => Uuid::class],
             ],
         ]);
-        $inputFilter->add([
-            'name' => 'name',
-            'required' => false,
-        ]);
         $collection->setInputFilter($inputFilter);
         $this->add($collection, 'tags');
 
         $this->setData($data);
+    }
+
+    /**
+     * Problem: Tree view does not support traversable object data
+     * Solution: We convert it to object id
+     * 
+     * @param  array $categories categories
+     * @return array new categories with id
+     */
+    private function filterCategories($categories)
+    {
+        $i = 0;
+        $newCatValues = array(); // if tag has not got id then add
+        foreach ((array)$categories as $id) {
+            $newCatValues[$i] = ['id' => $id];
+            ++$i;
+        }
+        return $newCatValues;
     }
 
     /**

@@ -33,9 +33,12 @@ class CategoryModel
     }
 
     public function findAll(array $get)
-    {
-        $visibility = empty($get['visibility']) ? 'private' : 'public';
-        $key = CACHE_ROOT_KEY.Self::class.':'.$visibility.':findAll';
+    {        
+        $nested = empty($get['nested']) ? false : true;
+        if ($nested) {
+            return $this->findAllNested();
+        }
+        $key = CACHE_ROOT_KEY.Self::class.':'.__FUNCTION__;
         if ($this->cache->hasItem($key)) {
             return $this->cache->getItem($key);
         } 
@@ -49,9 +52,6 @@ class CategoryModel
             'rgt',
         ]);
         $select->from(['c' => 'categories']);
-        if ($visibility == 'public') {
-            $select->where->notEqualTo('parentId', 0); // don't show main category name
-        }
         $nest = $select->where->nest();
             $nest->and->between('c.lft', new Expression('c.lft'), new Expression('c.rgt'));
         $nest->unnest();
@@ -68,9 +68,9 @@ class CategoryModel
         return $options;
     }
 
-    public function findAllByPaging()
+    public function findAllNested()
     {
-        $key = CACHE_ROOT_KEY.Self::class.':findAllByPaging';
+        $key = CACHE_ROOT_KEY.Self::class.':'.__FUNCTION__;
         if ($this->cache->hasItem($key)) {
             return $this->cache->getItem($key);
         }        
@@ -173,8 +173,6 @@ class CategoryModel
         $rgtValue = (int)$row['rgt'];
         $lftValue = (int)$row['lft'];
         $width = $rgtValue - $lftValue + 1;
-
-        $this->deleteCache();
         try {
             $this->conn->beginTransaction();
             
@@ -193,6 +191,7 @@ class CategoryModel
             $statement = $this->adapter->createStatement('UPDATE `categories` SET lft = lft - ? WHERE `lft` > ?');
             $statement->execute([$width, $rgtValue]);
 
+            $this->deleteCache();
             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
@@ -208,7 +207,7 @@ class CategoryModel
                 $children = $this->buildTree($items, $item['categoryId']);
                 $node = [
                     'id' => $item['categoryId'],
-                    'title' => $item['name'],
+                    'name' => $item['name'],
                     'parentId' => $item['parentId'],
                     'rgt' => $item['rgt'],
                     'lft' => $item['lft'],
@@ -328,9 +327,8 @@ class CategoryModel
 
     private function deleteCache()
     {
-        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':public:findAll');
-        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':private:findAll');
-        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':findAllByPaging');
+        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':findAll');
+        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':findAllNested');
     }
 
 }

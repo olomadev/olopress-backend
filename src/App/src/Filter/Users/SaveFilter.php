@@ -10,7 +10,7 @@ use App\Filter\CollectionInputFilter;
 use App\Filter\Utils\MbUcFirstFilter;
 use App\Filter\Utils\EmailNormalizeFilter;
 use App\Filter\Utils\ToFile;
-use App\Validator\BlobFileUpload;
+use App\Validator\BlobFileData;
 use Laminas\Filter\ToInt;
 use Laminas\Filter\StringTrim;
 use Laminas\Validator\Uuid;
@@ -151,7 +151,7 @@ class SaveFilter extends InputFilter
             ],
             'validators' => [
                 [
-                    'name' => BlobFileUpload::class,
+                    'name' => BlobFileData::class,
                     'options' => [
                         'operation' => HTTP_METHOD == 'POST' ? 'create' : 'update',
                         'max_allowed_upload' => 2097152,  // 2 mega bytes

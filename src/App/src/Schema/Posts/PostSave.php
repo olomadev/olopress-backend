@@ -66,7 +66,7 @@ class PostSave
     *      type="array",
     *      @OA\Items(
     *           @OA\Property(
-    *             property="categoryId",
+    *             property="id",
     *             type="string",
     *           )
     *     ),
@@ -79,7 +79,7 @@ class PostSave
     *      type="array",
     *      @OA\Items(
     *           @OA\Property(
-    *             property="permId",
+    *             property="id",
     *             type="string",
     *           )
     *     ),
