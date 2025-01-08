@@ -219,7 +219,8 @@ class ConfigProvider
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $files = new TableGateway('files', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $postFiles = new TableGateway('postFiles', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
-                    return new Model\FileModel($files, $postFiles);
+                    $posts = new TableGateway('posts', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    return new Model\FileModel($files, $postFiles, $posts);
                 },
                 PermissionModelInterface::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);

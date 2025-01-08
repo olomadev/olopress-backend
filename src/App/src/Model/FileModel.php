@@ -20,11 +20,13 @@ class FileModel
 
     public function __construct(   
         private TableGatewayInterface $files,
-        private TableGatewayInterface $postFiles
+        private TableGatewayInterface $postFiles,
+        private TableGatewayInterface $posts
     )
     {
         $this->files = $files;
         $this->postFiles = $postFiles;
+        $this->posts = $posts;
         $this->adapter = $files->getAdapter();
         $this->conn = $this->adapter->getDriver()->getConnection();
     }
@@ -153,13 +155,23 @@ class FileModel
     public function delete(string $fileName)
     {
         $row = $this->findOneByName($fileName);
-        try {
-            $this->conn->beginTransaction();
-            $this->files->delete(['fileId' => $row['id']]);
-            $this->conn->commit();
-        } catch (Exception $e) {
-            $this->conn->rollback();
-            throw $e;
+        if ($row) {
+            $fileId = $row['id'];
+            $foundPostId = $this->findFeaturedImagePostId($row['id']);
+            try {
+                $this->conn->beginTransaction();
+                $this->files->delete(['fileId' => $fileId]);
+                //
+                // remove current post featured image if we it's equal with file id
+                // 
+                if ($foundPostId) {
+                    $this->posts->update(['featuredImageId' => null], ['postId' => $foundPostId]);    
+                }
+                $this->conn->commit();
+            } catch (Exception $e) {
+                $this->conn->rollback();
+                throw $e;
+            }
         }
     }
 
@@ -176,6 +188,24 @@ class FileModel
         $width = imagesx($image);
         $height = imagesy($image);
         return [$width, $height];
+    }
+
+    protected function findFeaturedImagePostId($fileId)
+    {
+        $sql = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(
+            [
+                'postId',
+            ]
+        );
+        $select->from(['p' => 'posts']);
+        $select->where(['p.featuredImageId' => $fileId]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $row = $resultSet->current();
+        $statement->getResource()->closeCursor();
+        return $row ? $row['postId'] : false;
     }
 
 

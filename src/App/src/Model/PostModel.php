@@ -56,6 +56,7 @@ class PostModel
         ]);
         $select->from(['p' => 'posts']);
         $select->join(['u' => 'users'], 'u.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
+        $select->order(['createdAt DESC']);
         return $select;
     }
 
@@ -108,14 +109,16 @@ class PostModel
             'authorId' => new Expression("JSON_OBJECT('id', u.userId, 'name', CONCAT(u.firstname, ' ', u.lastname))"),
             'title',
             'permalink',
+            'description',
             'contentJson',
             'publishStatus',
-            'featuredImageId',
+            'featuredImageId' => new Expression("JSON_OBJECT('id', f.fileId, 'name', f.fileName)"),
             'publishedAt',
             'createdAt',
         ]);
         $select->from(['p' => 'posts']);
         $select->join(['u' => 'users'], 'u.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
+        $select->join(['f' => 'files'], 'f.fileId = p.featuredImageId', [], $select::JOIN_LEFT);
         $select->where(['p.postId' => $postId]);
         //
         // echo $select->getSqlString($this->adapter->getPlatform());

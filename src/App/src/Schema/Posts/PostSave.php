@@ -36,6 +36,11 @@ class PostSave
      * @var string
      * @OA\Property()
      */
+    public $description;
+    /**
+     * @var string
+     * @OA\Property()
+     */
     public $contentJson;
     /**
      * @var string

@@ -83,6 +83,28 @@ class SaveFilter extends InputFilter
                         'max' => 255,
                     ],
                 ],
+                [
+                    'name' => HTTP_METHOD == 'POST' ? NoRecordExists::class : RecordExists::class,
+                    'options' => [
+                        'table'   => 'posts',
+                        'field'   => 'permalink',
+                        'adapter' => $this->adapter,
+                    ]
+                ]
+            ],
+        ]);
+        $this->add([
+            'name' => 'description',
+            'required' => false,
+            'validators' => [
+                [
+                    'name' => StringLength::class,
+                    'options' => [
+                        'encoding' => 'UTF-8',
+                        'min' => 2,
+                        'max' => 255,
+                    ],
+                ],
             ],
         ]);
         $this->add([

@@ -18,7 +18,6 @@ class PostsFindOneByIdObject
     * @var object
     * @OA\Property(
     *     ref="#/components/schemas/ObjectId",
-    *     format="uuid",
     * )
     */
     public $authorId;
@@ -32,6 +31,11 @@ class PostsFindOneByIdObject
      * @OA\Property()
      */
     public $permalink;
+    /**
+     * @var string
+     * @OA\Property()
+     */
+    public $description;
     /**
      * @var array
      * @OA\Property()
@@ -53,9 +57,11 @@ class PostsFindOneByIdObject
      */
     public $publishedAt;
     /**
-     * @var string
-     * @OA\Property()
-     */
+    * @var object
+    * @OA\Property(
+    *     ref="#/components/schemas/ObjectId",
+    * )
+    */
     public $featuredImageId;
     /**
     *  @var array
