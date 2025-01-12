@@ -116,7 +116,7 @@ class FileModel
                 $response['thumbs'][] = $thumbDetails;
                 $thumbDetails = $this->createThumb($thumb, "160x110");
                 $response['thumbs'][] = $thumbDetails;
-                $thumbDetails = $this->createThumb($thumb, "320x160");
+                $thumbDetails = $this->createThumb($thumb, "240x165");
                 $response['thumbs'][] = $thumbDetails;
             }
             $this->conn->commit();

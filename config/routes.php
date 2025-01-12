@@ -77,6 +77,15 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/posts/findAllByPaging', [...$auth, ...[App\Handler\Posts\FindAllByPagingHandler::class]], ['GET']);
     $app->route('/api/posts/findOneById/:postId', [...$auth, ...[App\Handler\Posts\FindOneByIdHandler::class]], ['GET']);
 
+    // Pages (private)
+    $app->route('/api/pages/create', [...$auth, ...[App\Handler\Pages\CreateHandler::class]], ['POST']);
+    $app->route('/api/pages/update/:pageId', [...$auth, ...[App\Handler\Pages\UpdateHandler::class]], ['PUT']);
+    $app->route('/api/pages/publish/:pageId', [...$auth, ...[App\Handler\Pages\PublishHandler::class]], ['PATCH']);
+    $app->route('/api/pages/delete/:pageId', [...$auth, ...[App\Handler\Pages\DeleteHandler::class]], ['DELETE']);
+    $app->route('/api/pages/findAll', [App\Handler\Pages\FindAllHandler::class], ['GET']);
+    $app->route('/api/pages/findAllByPaging', [...$auth, ...[App\Handler\Pages\FindAllByPagingHandler::class]], ['GET']);
+    $app->route('/api/pages/findOneById/:pageId', [...$auth, ...[App\Handler\Pages\FindOneByIdHandler::class]], ['GET']);
+
     // Roles (private)
     $app->route('/api/roles/create', [...$auth, ...[App\Handler\Roles\CreateHandler::class]], ['POST']);
     $app->route('/api/roles/update/:roleId', [...$auth, ...[App\Handler\Roles\UpdateHandler::class]], ['PUT']);

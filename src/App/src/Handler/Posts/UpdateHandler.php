@@ -35,7 +35,7 @@ class UpdateHandler implements RequestHandlerInterface
      *   path="/posts/uptdate/{postId}",
      *   tags={"Posts"},
      *   summary="Update post",
-     *   operationId="posts_create",
+     *   operationId="posts_update",
      *
      *   @OA\Parameter(
      *       name="postId",

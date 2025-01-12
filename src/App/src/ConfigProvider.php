@@ -60,6 +60,10 @@ class ConfigProvider
                     // Permissions
                     Filter\Permissions\SaveFilter::class => Filter\Permissions\SaveFilterFactory::class,
                     Filter\Permissions\DeleteFilter::class => Filter\Permissions\DeleteFilterFactory::class,
+                    // Pages
+                    Filter\Pages\SaveFilter::class => Filter\Pages\SaveFilterFactory::class,
+                    Filter\Pages\PublishFilter::class => Filter\Pages\PublishFilterFactory::class,
+                    Filter\Pages\DeleteFilter::class => Filter\Pages\DeleteFilterFactory::class,
                     // Posts
                     Filter\Posts\SaveFilter::class => Filter\Posts\SaveFilterFactory::class,
                     Filter\Posts\PublishFilter::class => Filter\Posts\PublishFilterFactory::class,
@@ -148,6 +152,14 @@ class ConfigProvider
                 Handler\Files\FindByNameHandler::class => Handler\Files\FindByNameHandlerFactory::class,
                 // featured-images
                 Handler\FeaturedImages\FindAllHandler::class => Handler\FeaturedImages\FindAllHandlerFactory::class,
+                // pages
+                Handler\Pages\CreateHandler::class => Handler\Pages\CreateHandlerFactory::class,
+                Handler\Pages\UpdateHandler::class => Handler\Pages\UpdateHandlerFactory::class,
+                Handler\Pages\PublishHandler::class => Handler\Pages\PublishHandlerFactory::class,
+                Handler\Pages\DeleteHandler::class => Handler\Pages\DeleteHandlerFactory::class,
+                Handler\Pages\FindOneByIdHandler::class => Handler\Pages\FindOneByIdHandlerFactory::class,
+                Handler\Pages\FindAllHandler::class => Handler\Pages\FindAllHandlerFactory::class,
+                Handler\Pages\FindAllByPagingHandler::class => Handler\Pages\FindAllByPagingHandlerFactory::class,
                 // posts
                 Handler\Posts\CreateHandler::class => Handler\Posts\CreateHandlerFactory::class,
                 Handler\Posts\UpdateHandler::class => Handler\Posts\UpdateHandlerFactory::class,
@@ -233,6 +245,19 @@ class ConfigProvider
                         $columnFilters
                     );
                 },
+                Model\PageModel::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $cacheStorage = $container->get(StorageInterface::class);
+                    $columnFilters = $container->get(ColumnFiltersInterface::class);
+                    $pages = new TableGateway('pages', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $files = new TableGateway('files', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    return new Model\PageModel(
+                        $pages,
+                        $files,
+                        $cacheStorage,
+                        $columnFilters
+                    );
+                },   
                 Model\PostModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $cacheStorage = $container->get(StorageInterface::class);

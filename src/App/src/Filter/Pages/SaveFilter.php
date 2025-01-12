@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filter\Posts;
+namespace App\Filter\Pages;
 
 use Laminas\Filter\ToInt;
 use Laminas\Validator\Uuid;

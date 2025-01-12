@@ -8,7 +8,6 @@ use App\Model\PostModel;
 use App\Filter\Posts\SaveFilter;
 use Olobase\Mezzio\DataManagerInterface;
 use Olobase\Mezzio\Error\ErrorWrapperInterface as Error;
-use Mezzio\Authentication\AuthenticationInterface;
 use Psr\Container\ContainerInterface;
 use Laminas\Db\Adapter\AdapterInterface;
 use Psr\Http\Server\RequestHandlerInterface;

@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Handler\Posts;
+namespace App\Handler\Pages;
 
-use App\Model\PostModel;
-use App\Schema\Posts\PostSave;
-use App\Filter\Posts\SaveFilter;
-use Mezzio\Authentication\UserInterface;
+use App\Model\PageModel;
+use App\Schema\Pages\PageSave;
+use App\Filter\Pages\SaveFilter;
 use Olobase\Mezzio\DataManagerInterface;
 use Olobase\Mezzio\Error\ErrorWrapperInterface as Error;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -18,13 +17,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 class CreateHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private PostModel $postModel,
+        private PageModel $pageModel,
         private DataManagerInterface $dataManager,
         private SaveFilter $filter,
         private Error $error,
     ) 
     {
-        $this->postModel = $postModel;
+        $this->pageModel = $pageModel;
         $this->dataManager = $dataManager;
         $this->error = $error;
         $this->filter = $filter;
@@ -32,19 +31,14 @@ class CreateHandler implements RequestHandlerInterface
     
     /**
      * @OA\Post(
-     *   path="/posts/create",
-     *   tags={"Posts"},
-     *   summary="Create a new post",
-     *   operationId="posts_create",
+     *   path="/pages/create",
+     *   tags={"Pages"},
+     *   summary="Create a new page",
+     *   operationId="pages_create",
      *
      *   @OA\RequestBody(
-     *     description="Create a new post",
-     *     @OA\JsonContent(ref="#/components/schemas/PostSave"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/PostSaveResponse"),
+     *     description="Create a new page",
+     *     @OA\JsonContent(ref="#/components/schemas/PageSave"),
      *   ),
      *   @OA\Response(
      *      response=400,
@@ -54,16 +48,13 @@ class CreateHandler implements RequestHandlerInterface
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $user = $request->getAttribute(UserInterface::class); // get id from current token
-        $userId = $user->getId();
         $this->filter->setInputData($request->getParsedBody());
         $data = array();
         $response = array();
         if ($this->filter->isValid()) {
             $this->dataManager->setInputFilter($this->filter);
-            $data = $this->dataManager->getSaveData(PostSave::class, 'posts');
-            $data['posts']['authorId'] = $userId;
-            $response['data']['permalink'] = $this->postModel->create($data);
+            $data = $this->dataManager->getSaveData(PageSave::class, 'pages');
+            $this->pageModel->create($data);
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);
         }
