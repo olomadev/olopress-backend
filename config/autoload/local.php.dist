@@ -85,7 +85,7 @@ return [
 	        // Enable exceptions
 	        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     	],
-        'database' => 'olopress',
+        'database' => 'olopage',
         'hostname' => 'localhost',
         'username' => 'root',
         'password' => '',
