@@ -68,7 +68,6 @@ class FindByNameHandler implements RequestHandlerInterface
             $response = new Response('php://temp', 200);
             $response->getBody()->write($row['fileData']);
             $response = $response->withHeader('Pragma', 'public');
-            $response = $response->withHeader('Expires', 0);
             $response = $response->withHeader('Cache-Control', 'max-age=86400');
             $response = $response->withHeader('Expires', gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT');
             $response = $response->withHeader('Content-Disposition', 'inline; filename='.$row['fileName']);

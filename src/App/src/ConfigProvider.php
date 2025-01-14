@@ -78,6 +78,7 @@ class ConfigProvider
                     Filter\Users\SaveFilter::class => Filter\Users\SaveFilterFactory::class,
                     Filter\Users\DeleteFilter::class => Filter\Users\DeleteFilterFactory::class,
                     Filter\Users\PasswordSaveFilter::class => Filter\Users\PasswordSaveFilterFactory::class,
+                    Filter\Users\DisplayAvatarFilter::class => Filter\Users\DisplayAvatarFilterFactory::class,
                 ],
             ],
         ];
@@ -175,6 +176,7 @@ class ConfigProvider
                 Handler\Users\FindOneByIdHandler::class => Handler\Users\FindOneByIdHandlerFactory::class,
                 Handler\Users\FindAllHandler::class => Handler\Users\FindAllHandlerFactory::class,
                 Handler\Users\FindAllByPagingHandler::class => Handler\Users\FindAllByPagingHandlerFactory::class,
+                Handler\Users\DisplayAvatarByIdHandler::class => Handler\Users\DisplayAvatarByIdHandlerFactory::class,
                 // roles
                 Handler\Roles\CreateHandler::class => Handler\Roles\CreateHandlerFactory::class,
                 Handler\Roles\UpdateHandler::class => Handler\Roles\UpdateHandlerFactory::class,
@@ -306,17 +308,17 @@ class ConfigProvider
                 },
                 Model\UserModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
+                    $cacheStorage = $container->get(StorageInterface::class);
                     $users = new TableGateway('users', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $userRoles = new TableGateway('userRoles', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $userAvatars = new TableGateway('userAvatars', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $columnFilters = $container->get(ColumnFiltersInterface::class);
-                    $simpleCache = $container->get(SimpleCacheInterface::class);
                     return new Model\UserModel(
                         $users,
                         $userRoles,
                         $userAvatars,
-                        $columnFilters,
-                        $simpleCache
+                        $cacheStorage,
+                        $columnFilters
                     );
                 },
 

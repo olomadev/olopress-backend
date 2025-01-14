@@ -102,6 +102,8 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/users/findAll', [...$auth, [App\Handler\Users\FindAllHandler::class]], ['GET']);
     $app->route('/api/users/findAllByPaging', [...$auth, [App\Handler\Users\FindAllByPagingHandler::class]], ['GET']);
     $app->route('/api/users/findOneById/:userId', [...$auth, [App\Handler\Users\FindOneByIdHandler::class]], ['GET']);
+    // Users (public)
+    $app->route('/api/users/displayAvatar/:userId', App\Handler\Users\DisplayAvatarByIdHandler::class, ['GET']);
 
     // Avatars (private)
     $app->route('/api/avatars/findOneById/:userId', [...$auth, [App\Handler\Users\FindOneByIdHandler::class]], ['GET']);

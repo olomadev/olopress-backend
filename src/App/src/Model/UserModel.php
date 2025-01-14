@@ -13,32 +13,26 @@ use Laminas\Paginator\Paginator;
 use Laminas\Paginator\Adapter\DbSelect;
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Db\TableGateway\TableGatewayInterface;
-use Psr\SimpleCache\CacheInterface as SimpleCacheInterface;
+use Laminas\Cache\Storage\StorageInterface;
 
 class UserModel
 {
     private $conn;
     private $adapter;
-    private $users;
-    private $cache;
-    private $simpleCache;
-    private $userRoles;
-    private $userAvatars;
-    private $columnFilters;
 
     public function __construct(
-        TableGatewayInterface $users,
-        TableGatewayInterface $userRoles,
-        TableGatewayInterface $userAvatars,
-        ColumnFiltersInterface $columnFilters,
-        SimpleCacheInterface $simpleCache
+        private TableGatewayInterface $users,
+        private TableGatewayInterface $userRoles,
+        private TableGatewayInterface $userAvatars,
+        private StorageInterface $cache,
+        private ColumnFiltersInterface $columnFilters
     ) {
         $this->adapter = $users->getAdapter();
         $this->users = $users;
         $this->userRoles = $userRoles;
         $this->userAvatars = $userAvatars;
         $this->columnFilters = $columnFilters;
-        $this->simpleCache = $simpleCache;
+        $this->cache = $cache;
         $this->conn = $this->adapter->getDriver()->getConnection();
     }
 
@@ -231,6 +225,32 @@ class UserModel
         return $row;
     }
 
+    public function findAvatarById(string $userId)
+    {
+        $key = CACHE_ROOT_KEY.Self::class.':'.$userId.':'.__FUNCTION__;
+        if ($this->cache->hasItem($key)) {
+            return $this->cache->getItem($key);
+        }
+        $sql = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(
+            [
+                'mimeType',
+                'avatarImage',             
+            ]
+        );
+        $select->from('userAvatars');
+        $select->where(['userId' => $userId]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $row = $resultSet->current();
+        $statement->getResource()->closeCursor();
+        if ($row) {
+            $this->cache->setItem($key, $row);
+        }
+        return $row;
+    }
+
     public function create(array $data)
     {
         $userId = $data['id'];
@@ -288,6 +308,7 @@ class UserModel
                         'avatarImage' => $data['avatar']['image']
                     ]
                 );
+                $this->deleteCache($userId);
             }
             $this->conn->commit();
         } catch (Exception $e) {
@@ -303,6 +324,7 @@ class UserModel
             $this->users->delete(['userId' => $userId]);
             $this->userRoles->delete(['userId' => $userId]);
             $this->userAvatars->delete(['userId' => $userId]);
+            $this->deleteCache($userId);
             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
@@ -313,18 +335,18 @@ class UserModel
     public function generateResetPassword(string $username) : string
     {
         $resetCode = generateRandomNumber(6);
-        $this->simpleCache->set((string)$resetCode, $username, 600); // wait confirmation for 10 minutes
+        $this->cache->setItem((string)$resetCode, $username, 600); // wait confirmation for 10 minutes
         return $resetCode;
     }
 
     public function checkResetCode(string $resetCode)
     {
-        return $this->simpleCache->get($resetCode);
+        return $this->cache->getItem($resetCode);
     }
 
     public function updatePasswordByResetCode(string $resetCode, string $newPassword)
     {
-        $username = $this->simpleCache->get($resetCode);
+        $username = $this->cache->getItem($resetCode);
         if ($username) {
             $password = password_hash($newPassword, PASSWORD_DEFAULT, ['cost' => 10]);
             try {
@@ -355,5 +377,10 @@ class UserModel
     public function getAdapter() : AdapterInterface
     {
         return $this->adapter;
+    }
+
+    private function deleteCache(strint $userId)
+    {
+        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':'.$userId.':'.__FUNCTION__);
     }
 }
