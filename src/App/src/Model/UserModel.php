@@ -379,7 +379,7 @@ class UserModel
         return $this->adapter;
     }
 
-    private function deleteCache(strint $userId)
+    private function deleteCache(string $userId)
     {
         $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':'.$userId.':'.__FUNCTION__);
     }

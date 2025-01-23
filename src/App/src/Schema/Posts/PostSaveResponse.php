@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Schema\Auth;
+namespace App\Schema\Posts;
 
 /**
  * @OA\Schema()

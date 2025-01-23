@@ -13,6 +13,13 @@ class FileSave
      *     format="uuid"
      * )
      */
+    public $pageId;
+    /**
+     * @var string
+     * @OA\Property(
+     *     format="uuid"
+     * )
+     */
     public $postId;
     /**
      * @var string

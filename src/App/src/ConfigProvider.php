@@ -233,8 +233,9 @@ class ConfigProvider
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $files = new TableGateway('files', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $postFiles = new TableGateway('postFiles', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $pageFiles = new TableGateway('pageFiles', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $posts = new TableGateway('posts', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
-                    return new Model\FileModel($files, $postFiles, $posts);
+                    return new Model\FileModel($files, $postFiles, $pageFiles, $posts);
                 },
                 PermissionModelInterface::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
@@ -263,6 +264,7 @@ class ConfigProvider
                 Model\PostModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $cacheStorage = $container->get(StorageInterface::class);
+                    $predisClient = $container->get(PredisInterface::class);
                     $columnFilters = $container->get(ColumnFiltersInterface::class);
                     $tags = new TableGateway('tags', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $files = new TableGateway('files', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
@@ -276,6 +278,7 @@ class ConfigProvider
                         $tags,
                         $files,
                         $cacheStorage,
+                        $predisClient,
                         $columnFilters
                     );
                 },                

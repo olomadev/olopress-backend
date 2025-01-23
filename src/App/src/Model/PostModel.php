@@ -12,6 +12,7 @@ use Laminas\Paginator\Adapter\DbSelect;
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Db\TableGateway\TableGatewayInterface;
+use Predis\ClientInterface as PredisInterface;
 
 use generateRandomAlphaLowerCase;
 
@@ -27,6 +28,7 @@ class PostModel
         private TableGatewayInterface $tags,
         private TableGatewayInterface $files,
         private StorageInterface $cache,
+        private PredisInterface $predisClient,
         private ColumnFiltersInterface $columnFilters
     )
     {
@@ -36,6 +38,7 @@ class PostModel
         $this->tags = $tags;
         $this->files = $files;
         $this->cache = $cache;
+        $this->predisClient = $predisClient;
         $this->adapter = $posts->getAdapter();
         $this->columnFilters = $columnFilters;
         $this->conn = $this->adapter->getDriver()->getConnection();
@@ -118,7 +121,11 @@ class PostModel
         ]);
         $select->from(['p' => 'posts']);
         $select->join(['u' => 'users'], 'u.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
-        $select->join(['f' => 'files'], 'f.fileId = p.featuredImageId', [], $select::JOIN_LEFT);
+        $select->join(['f' => 'files'], 
+            new Expression('f.fileId = p.featuredImageId AND f.fileDimension = ?', ['80x55']), 
+            [],
+            $select::JOIN_LEFT
+        );
         $select->where(['p.postId' => $postId]);
         //
         // echo $select->getSqlString($this->adapter->getPlatform());
@@ -325,8 +332,18 @@ class PostModel
 
     private function deleteCache()
     {
-        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':findTags');
-        $this->cache->removeItem(CACHE_ROOT_KEY.Self::class.':findCategories');
+        $pattern = 'olopage:posts-page-*';
+        $cursor = 0;
+        do { // find keys
+            $results = $this->predisClient->scan($cursor, ['MATCH' => $pattern, 'COUNT' => 200]);
+            $cursor = $results[0];
+            $keys = $results[1];
+            if (!empty($keys)) {
+                foreach ($keys as $key) {
+                    $this->predisClient->del($key);
+                }
+            }
+        } while ($cursor != 0);
     }
 
 }

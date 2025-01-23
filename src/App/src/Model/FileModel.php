@@ -21,11 +21,13 @@ class FileModel
     public function __construct(   
         private TableGatewayInterface $files,
         private TableGatewayInterface $postFiles,
+        private TableGatewayInterface $pageFiles,
         private TableGatewayInterface $posts
     )
     {
         $this->files = $files;
         $this->postFiles = $postFiles;
+        $this->pageFiles = $pageFiles;
         $this->posts = $posts;
         $this->adapter = $files->getAdapter();
         $this->conn = $this->adapter->getDriver()->getConnection();
@@ -76,9 +78,14 @@ class FileModel
     public function create(array $data) : array
     {
         $postId = null;
+        $pageId = null;
         if (! empty($data['files']['postId'])) {
             $postId = $data['files']['postId'];
             unset($data['files']['postId']);
+        }
+        if (! empty($data['files']['pageId'])) {
+            $pageId = $data['files']['pageId'];
+            unset($data['files']['pageId']);
         }
         $data['files']['fileTag'] = 'original';
         $data['files']['fileType'] = 'image/webp';
@@ -103,6 +110,12 @@ class FileModel
                 $val['postId'] = $postId;
                 $val['fileId'] = $data['files']['fileId'];
                 $this->postFiles->insert($val);
+            }
+            if ($pageId) {
+                $val = array();
+                $val['pageId'] = $pageId;
+                $val['fileId'] = $data['files']['fileId'];
+                $this->pageFiles->insert($val);
             }
             unset($data['files']['fileData']);
             $response['original'] = $data['files']; // original

@@ -34,8 +34,8 @@ class PublishFilter extends InputFilter
                 [
                     'name' => HTTP_METHOD == 'POST' ? NoRecordExists::class : RecordExists::class,
                     'options' => [
-                        'table'   => 'posts',
-                        'field'   => 'postId',
+                        'table'   => 'pages',
+                        'field'   => 'pageId',
                         'adapter' => $this->adapter,
                     ]
                 ]
@@ -53,20 +53,7 @@ class PublishFilter extends InputFilter
                 ],
             ],
         ]);
-        $this->add([
-            'name' => 'publishedAt',
-            'required' => true,
-            'validators' => [
-                [
-                    'name' => Date::class,
-                    'options' => [
-                        'format' => 'Y-m-d H:i:s',
-                        'strict' => true,
-                    ],
-                ],
-            ]
-        ]);
-
+        
         $this->setData($data);
     }
 }

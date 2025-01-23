@@ -108,7 +108,6 @@ class PageModel
             'createdAt',
         ]);
         $select->from(['p' => 'pages']);
-        $select->join(['f' => 'files'], 'f.fileId = p.featuredImageId', [], $select::JOIN_LEFT);
         $select->where(['p.pageId' => $pageId]);
         //
         // echo $select->getSqlString($this->adapter->getPlatform());
@@ -123,10 +122,28 @@ class PageModel
             $row['contentJson'] = json_decode($row['contentJson'], true);
         }
         $statement->getResource()->closeCursor();
+        //
+        // page files
+        // 
+        $sql    = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns([]);
+        $select->from(['pf' => 'pageFiles']);
+        $select->join(['f' => 'files'], 'pf.fileId = f.fileId', 
+            [
+                'fileName',
+            ],
+        $select::JOIN_LEFT);
+        $select->where(['pageId' => $pageId]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $pageFiles = iterator_to_array($resultSet);
+        $statement->getResource()->closeCursor();
+        $row['pageFiles'] = is_array($pageFiles) ? $pageFiles : array();
         return $row;
     }
 
-    public function create(array $data) : string
+    public function create(array $data)
     {
         $pageId = $data['id'];
         try {
@@ -139,10 +156,9 @@ class PageModel
             $this->conn->rollback();
             throw $e;
         }
-        return $data['pages']['permalink'];
     }
 
-    public function update(array $data) : string
+    public function update(array $data)
     {
         $pageId = $data['id'];
         try {
@@ -153,7 +169,6 @@ class PageModel
             $this->conn->rollback();
             throw $e;
         }
-        return $data['pages']['permalink'];
     }
 
     public function publish(array $data)

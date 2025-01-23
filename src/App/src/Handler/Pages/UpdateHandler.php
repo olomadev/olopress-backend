@@ -31,7 +31,7 @@ class UpdateHandler implements RequestHandlerInterface
 
     /**
      * @OA\Put(
-     *   path="/pages/uptdate/{postId}",
+     *   path="/pages/uptdate/{pageId}",
      *   tags={"Pages"},
      *   summary="Update page",
      *   operationId="pages_update",

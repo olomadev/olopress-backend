@@ -25,7 +25,7 @@ class FindOneByIdHandler implements RequestHandlerInterface
 
     /**
      * @OA\Get(
-     *   path="/pages/findOneById/{postId}",
+     *   path="/pages/findOneById/{pageId}",
      *   tags={"Pages"},
      *   summary="Find one page data",
      *   operationId="posts_findOneById",
@@ -51,8 +51,8 @@ class FindOneByIdHandler implements RequestHandlerInterface
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $postId = $request->getAttribute("postId");
-        $row = $this->pageModel->findOneById($postId);
+        $pageId = $request->getAttribute("pageId");
+        $row = $this->pageModel->findOneById($pageId);
         if ($row) {
             $data = $this->dataManager->getViewData(PagesFindOneById::class, $row);
             return new JsonResponse($data);   

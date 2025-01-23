@@ -28,8 +28,8 @@ class DeleteFilter extends InputFilter
                 [
                     'name' => RecordExists::class,
                     'options' => [
-                        'table'   => 'posts',
-                        'field'   => 'postId',
+                        'table'   => 'pages',
+                        'field'   => 'pageId',
                         'adapter' => $this->adapter,
                     ]
                 ]

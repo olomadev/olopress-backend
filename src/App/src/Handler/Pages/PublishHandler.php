@@ -31,7 +31,7 @@ class PublishHandler implements RequestHandlerInterface
 
     /**
      * @OA\Patch(
-     *   path="/pages/publish/{postId}",
+     *   path="/pages/publish/{pageId}",
      *   tags={"Pages"},
      *   summary="Publish page",
      *   operationId="pages_publish",
