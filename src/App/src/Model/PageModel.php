@@ -47,6 +47,7 @@ class PageModel
             'createdAt',
         ]);
         $select->from(['p' => 'pages']);
+        $select->join(['s' => 'screenshots'], 'p.pageId = s.pageId', ['screenId', 'imageType'], $select::JOIN_LEFT);
         $select->order(['createdAt DESC']);
         return $select;
     }
@@ -139,7 +140,7 @@ class PageModel
         $resultSet = $statement->execute();
         $pageFiles = iterator_to_array($resultSet);
         $statement->getResource()->closeCursor();
-        $row['pageFiles'] = is_array($pageFiles) ? $pageFiles : array();
+        $row['pageFiles'] = is_array($pageFiles) ? array_column($pageFiles, 'fileName') : array();
         return $row;
     }
 

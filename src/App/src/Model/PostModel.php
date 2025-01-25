@@ -59,6 +59,7 @@ class PostModel
         ]);
         $select->from(['p' => 'posts']);
         $select->join(['u' => 'users'], 'u.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
+        $select->join(['s' => 'screenshots'], 'p.postId = s.postId', ['screenId', 'imageType'], $select::JOIN_LEFT);
         $select->order(['createdAt DESC']);
         return $select;
     }

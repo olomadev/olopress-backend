@@ -75,7 +75,7 @@ class FileModel
         return  $row;
     }
 
-    public function create(array $data) : array
+    public function create(array $data, $thumb = true) : array
     {
         $postId = null;
         $pageId = null;
@@ -123,7 +123,7 @@ class FileModel
             //
             // create thumbnails only for images with image width larger than 499px
             //
-            if ($width > 499) { // thumbs
+            if ($thumb && $width > 499) { // thumbs
                 $thumb = ['fileId' => $data['files']['fileId'], 'fileData' => $fileData, 'fileMeta' => $fileMeta];
                 $thumbDetails = $this->createThumb($thumb, "80x55");
                 $response['thumbs'][] = $thumbDetails;

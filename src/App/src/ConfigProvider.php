@@ -191,6 +191,8 @@ class ConfigProvider
                 Handler\Permissions\DeleteHandler::class => Handler\Permissions\DeleteHandlerFactory::class,
                 Handler\Permissions\FindAllHandler::class => Handler\Permissions\FindAllHandlerFactory::class,
                 Handler\Permissions\FindAllByPagingHandler::class => Handler\Permissions\FindAllByPagingHandlerFactory::class,
+                // screenshots
+                Handler\Screenshots\FindOneByIdHandler::class => Handler\Screenshots\FindOneByIdHandlerFactory::class,
                 // tags
                 Handler\Tags\CreateHandler::class => Handler\Tags\CreateHandlerFactory::class,
                 Handler\Tags\UpdateHandler::class => Handler\Tags\UpdateHandlerFactory::class,
@@ -294,6 +296,12 @@ class ConfigProvider
                         $cacheStorage,
                         $columnFilters
                     );
+                },
+                Model\ScreenshotModel::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $screenshots = new TableGateway('screenshots', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $cacheStorage = $container->get(StorageInterface::class);
+                    return new Model\ScreenshotModel($screenshots, $cacheStorage);
                 },
                 Model\TagModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);

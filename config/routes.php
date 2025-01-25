@@ -117,6 +117,9 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/permissions/findAll', [JwtAuthenticationMiddleware::class, App\Handler\Permissions\FindAllHandler::class], ['GET']);
     $app->route('/api/permissions/findAllByPaging', [...$auth, [App\Handler\Permissions\FindAllByPagingHandler::class]], ['GET']);
 
+    // Screenshots (public)
+    $app->route('/api/screenshots/display/:id', App\Handler\Screenshots\FindOneByIdHandler::class, ['GET']);
+
     // Tags
     $app->route('/api/tags/findAll', [...$auth, ...[App\Handler\Tags\FindAllHandler::class]], ['GET']);
     $app->route('/api/tags/findAllByPaging', [...$auth, ...[App\Handler\Tags\FindAllByPagingHandler::class]], ['GET']);

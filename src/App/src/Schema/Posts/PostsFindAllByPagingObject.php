@@ -43,6 +43,18 @@ class PostsFindAllByPagingObject
      */
     public $publishedAt;
     /**
+     * @var string
+     * @OA\Property(
+     *     format="uuid"
+     * )
+     */
+    public $screenId;
+    /**
+     * @var string
+     * @OA\Property()
+     */
+    public $imageType;
+    /**
     *  @var array
     *  @OA\Property(
     *      type="array",

@@ -39,4 +39,16 @@ class PagesFindAllByPagingObject
      * @OA\Property()
      */
     public $publishStatus;
+    /**
+     * @var string
+     * @OA\Property(
+     *     format="uuid"
+     * )
+     */
+    public $screenId;
+    /**
+     * @var string
+     * @OA\Property()
+     */
+    public $imageType;
 }

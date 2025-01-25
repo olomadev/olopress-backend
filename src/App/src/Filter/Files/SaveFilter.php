@@ -35,6 +35,13 @@ class SaveFilter extends InputFilter
             ],
         ]);
         $this->add([
+            'name' => 'pageId',
+            'required' => false,
+            'validators' => [
+                ['name' => Uuid::class],
+            ],
+        ]);
+        $this->add([
             'name' => 'fileId',
             'required' => true,
             'validators' => [

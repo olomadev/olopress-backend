@@ -36,6 +36,15 @@ class CreateHandler implements RequestHandlerInterface
      *   summary="Create a new file",
      *   operationId="files_create",
      *
+     *   @OA\Parameter(
+     *       in="query",
+     *       name="thumb",
+     *       required=false,
+     *       description="Thumbnail creation switch",
+     *       @OA\Schema(
+     *           type="string",
+     *       ),
+     *   ),
      *   @OA\RequestBody(
      *     description="Create a new file",
      *     @OA\JsonContent(ref="#/components/schemas/FileSave"),
@@ -52,14 +61,16 @@ class CreateHandler implements RequestHandlerInterface
      **/
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->filter->setInputData($request->getParsedBody());
+        $post = $request->getParsedBody();    
+        $this->filter->setInputData($post);
         $data = array();
         $response = array();
         $response['data']['fileName'] = null;
+        $thumb = (array_key_exists('thumb', $post) && $post['thumb'] == false) ? false : true;
         if ($this->filter->isValid()) {
             $this->dataManager->setInputFilter($this->filter);
             $data = $this->dataManager->getSaveData(FileSave::class, 'files');
-            $response['data'] = $this->fileModel->create($data);
+            $response['data'] = $this->fileModel->create($data, $thumb);
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);
         }
