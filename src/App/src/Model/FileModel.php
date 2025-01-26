@@ -120,17 +120,14 @@ class FileModel
             unset($data['files']['fileData']);
             $response['original'] = $data['files']; // original
             $response['thumbs'] = array();
+            $thumbData = ['fileId' => $data['files']['fileId'], 'fileData' => $fileData, 'fileMeta' => $fileMeta];
+            $response['thumbs'][] = $this->createThumb($thumbData, "80x55");
             //
-            // create thumbnails only for images with image width larger than 499px
-            //
+            // create other thumbnails only for images with image width larger than 499px
+            //            
             if ($thumb && $width > 499) { // thumbs
-                $thumb = ['fileId' => $data['files']['fileId'], 'fileData' => $fileData, 'fileMeta' => $fileMeta];
-                $thumbDetails = $this->createThumb($thumb, "80x55");
-                $response['thumbs'][] = $thumbDetails;
-                $thumbDetails = $this->createThumb($thumb, "160x110");
-                $response['thumbs'][] = $thumbDetails;
-                $thumbDetails = $this->createThumb($thumb, "240x165");
-                $response['thumbs'][] = $thumbDetails;
+                $response['thumbs'][] = $this->createThumb($thumbData, "160x110");
+                $response['thumbs'][] = $this->createThumb($thumbData, "240x165");
             }
             $this->conn->commit();
         } catch (Exception $e) {

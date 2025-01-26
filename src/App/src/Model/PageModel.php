@@ -135,7 +135,7 @@ class PageModel
                 'fileName',
             ],
         $select::JOIN_LEFT);
-        $select->where(['pageId' => $pageId]);
+        $select->where(['pf.pageId' => $pageId, 'f.fileTag' => 'original']);
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = $statement->execute();
         $pageFiles = iterator_to_array($resultSet);
