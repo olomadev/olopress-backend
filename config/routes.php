@@ -53,20 +53,24 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/account/update', [...$auth, ...[App\Handler\Account\UpdateHandler::class]], ['PUT']);
     $app->route('/api/account/updatePassword', [...$auth, ...[App\Handler\Account\UpdatePasswordHandler::class]], ['PUT']);
 
-    // Files
-    $app->route('/api/files/display', App\Handler\Files\FindByNameHandler::class, ['GET']);
-    $app->route('/api/files/create', [...$auth, ...[App\Handler\Files\CreateHandler::class]], ['POST']);
-    $app->route('/api/files/delete', [...$auth, ...[App\Handler\Files\DeleteHandler::class]], ['DELETE']);
-
-    // Featured images
-    $app->route('/api/featured-images/findAll', [...$auth, ...[App\Handler\FeaturedImages\FindAllHandler::class]], ['GET']);
-    
     // Categories
     $app->route('/api/categories/findAll', [...$auth, ...[App\Handler\Categories\FindAllHandler::class]], ['GET']);
     $app->route('/api/categories/findAllByPaging', [...$auth, ...[App\Handler\Categories\FindAllByPagingHandler::class]], ['GET']);
     $app->route('/api/categories/create', [...$auth, ...[App\Handler\Categories\CreateHandler::class]], ['POST']);
     $app->route('/api/categories/delete/:categoryId', [...$auth, ...[App\Handler\Categories\DeleteHandler::class]], ['DELETE']);
     $app->route('/api/categories/update/:categoryId', [...$auth, ...[App\Handler\Categories\UpdateHandler::class]], ['PUT']);
+
+    // Comments (private)
+    $app->route('/api/comments/delete/:commentId', [...$auth, ...[App\Handler\Comments\DeleteHandler::class]], ['DELETE']);;
+    $app->route('/api/comments/findAllByPaging', [...$auth, ...[App\Handler\Comments\FindAllByPagingHandler::class]], ['GET']);
+
+    // Featured images
+    $app->route('/api/featured-images/findAll', [...$auth, ...[App\Handler\FeaturedImages\FindAllHandler::class]], ['GET']);
+
+    // Files
+    $app->route('/api/files/display', App\Handler\Files\FindByNameHandler::class, ['GET']);
+    $app->route('/api/files/create', [...$auth, ...[App\Handler\Files\CreateHandler::class]], ['POST']);
+    $app->route('/api/files/delete', [...$auth, ...[App\Handler\Files\DeleteHandler::class]], ['DELETE']);
 
     // Posts (private)
     $app->route('/api/posts/create', [...$auth, ...[App\Handler\Posts\CreateHandler::class]], ['POST']);
@@ -102,6 +106,7 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/api/users/findAll', [...$auth, [App\Handler\Users\FindAllHandler::class]], ['GET']);
     $app->route('/api/users/findAllByPaging', [...$auth, [App\Handler\Users\FindAllByPagingHandler::class]], ['GET']);
     $app->route('/api/users/findOneById/:userId', [...$auth, [App\Handler\Users\FindOneByIdHandler::class]], ['GET']);
+    
     // Users (public)
     $app->route('/api/users/displayAvatar/:userId', App\Handler\Users\DisplayAvatarByIdHandler::class, ['GET']);
 

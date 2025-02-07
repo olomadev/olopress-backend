@@ -16,19 +16,15 @@ use Psr\SimpleCache\CacheInterface as SimpleCacheInterface;
 class FailedLoginModel
 {
     private $conn;
-    private $predis;
     private $adapter;
     private $message;
-    private $users;
-    private $simpleCache;
-    private $failedLogins;
-    private $columnFilters;
 
     public function __construct(
-        TableGatewayInterface $users,
-        TableGatewayInterface $failedLogins,
-        SimpleCacheInterface $simpleCache,
-        ColumnFiltersInterface $columnFilters
+        private TableGatewayInterface $users,
+        private TableGatewayInterface $userProfile,
+        private TableGatewayInterface $failedLogins,
+        private SimpleCacheInterface $simpleCache,
+        private ColumnFiltersInterface $columnFilters
     ) {
         $this->users = $users;
         $this->adapter = $users->getAdapter();
@@ -122,7 +118,8 @@ class FailedLoginModel
     {
         try {
             $this->conn->beginTransaction();
-            $this->users->update($data, ['userId' => $where['userId']]);
+            $this->users->update(['lastLogin' => $data['lastLogin']], ['userId' => $where['userId']]);
+            $this->userProfile->update(['locale' => $data['locale']], ['userId' => $where['userId']]);
             $this->failedLogins->delete(['username' => $where['username']]);
             $this->conn->commit();
         } catch (Exception $e) {

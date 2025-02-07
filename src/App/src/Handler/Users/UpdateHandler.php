@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Handler\Users;
 
 use App\Model\UserModel;
+use App\Model\PostModel;
 use App\Schema\Users\UserSave;
 use App\Filter\Users\SaveFilter;
 use Olobase\Mezzio\DataManagerInterface;
@@ -18,12 +19,14 @@ class UpdateHandler implements RequestHandlerInterface
 {
     public function __construct(
         private UserModel $userModel,        
+        private PostModel $postModel,
         private DataManagerInterface $dataManager,
         private SaveFilter $filter,
         private Error $error,
     ) 
     {
         $this->userModel = $userModel;
+        $this->postModel = $postModel;
         $this->dataManager = $dataManager;
         $this->error = $error;
         $this->filter = $filter;
@@ -67,6 +70,7 @@ class UpdateHandler implements RequestHandlerInterface
             $this->dataManager->setInputFilter($this->filter);
             $data = $this->dataManager->getSaveData(UserSave::class, 'users');
             $this->userModel->update($data);
+            $this->postModel->deleteCache();
         } else {
             return new JsonResponse($this->error->getMessages($this->filter), 400);
         }

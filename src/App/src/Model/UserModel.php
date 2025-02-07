@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model;
 
-use function generateRandomNumber;
+use function generateRandomNumber, createGuid;
 
 use Exception;
 use Olobase\Mezzio\ColumnFiltersInterface;
@@ -22,6 +22,7 @@ class UserModel
 
     public function __construct(
         private TableGatewayInterface $users,
+        private TableGatewayInterface $userProfile,
         private TableGatewayInterface $userRoles,
         private TableGatewayInterface $userAvatars,
         private StorageInterface $cache,
@@ -29,6 +30,7 @@ class UserModel
     ) {
         $this->adapter = $users->getAdapter();
         $this->users = $users;
+        $this->userProfile = $userProfile;
         $this->userRoles = $userRoles;
         $this->userAvatars = $userAvatars;
         $this->columnFilters = $columnFilters;
@@ -42,13 +44,19 @@ class UserModel
         $select = $sql->select();
         $select->columns([
             'id' => 'userId',
-            'firstname',
-            'lastname',
             'email',
             'active',
             'createdAt',
         ]);
         $select->from(['u' => 'users']);
+        $select->join(
+            ['up' => 'userProfile'], 'up.userId = u.userId',
+            [
+                'firstname',
+                'lastname',
+            ],
+            $select::JOIN_LEFT
+        );
         return $select;
     }
 
@@ -56,6 +64,8 @@ class UserModel
     {
         $select = $this->findAllBySelect();
         $this->columnFilters->clear();
+        $this->columnFilters->setAlias('firstname', 'up.firstname');
+        $this->columnFilters->setAlias('lastname', 'up.lastname');
         $this->columnFilters->setColumns([
             'firstname',
             'lastname',
@@ -142,19 +152,26 @@ class UserModel
             [
                 'id' => 'userId',
                 'userId',
-                'firstname',
-                'lastname',
                 'email',
-                'locale' => new Expression("JSON_OBJECT('id', l.langId, 'name', l.langName)"),
-                'emailActivation',
                 'active',
-                'themeColor',
+                'emailActivation',
                 'lastLogin',
                 'createdAt',
             ]
         );
         $select->from(['u' => 'users']);
-        $select->join(['l' => 'languages'], 'u.locale = l.langId', [], $select::JOIN_LEFT);
+        $select->join(
+            ['up' => 'userProfile'], 'up.userId = u.userId',
+            [
+                'firstname',
+                'lastname',
+                'locale' => new Expression("JSON_OBJECT('id', l.langId, 'name', l.langName)"),
+                'jobTitle',
+                'themeColor',
+            ],
+            $select::JOIN_LEFT
+        );
+        $select->join(['l' => 'languages'], 'up.locale = l.langId', [], $select::JOIN_LEFT);
         $select->join(['ua' => 'userAvatars'], 'ua.userId = u.userId',
             [
                 'avatar' => new Expression("JSON_OBJECT('image', CONCAT('data:image/png;base64,', TO_BASE64(avatarImage)))"),
@@ -164,40 +181,50 @@ class UserModel
 
         // echo $select->getSqlString($this->adapter->getPlatform());
         // die;
+        $userProfile = array();
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = $statement->execute();
         $row = $resultSet->current();
         $statement->getResource()->closeCursor();
-
-        // user roles
-        // 
-        $sql    = new Sql($this->adapter);
-        $select = $sql->select();
-        $select->columns(
-            [
-                'id' => 'roleId',
-            ]
-        );
-        $select->from('userRoles');
-        $select->join(['r' => 'roles'], 'r.roleId = userRoles.roleId',
-            [
-                'name' => 'roleName'
-            ],
-        $select::JOIN_LEFT);
-        $select->where(['userId' => $userId]);
-        // echo $select->getSqlString($this->adapter->getPlatform());
-        // die;
-        $statement = $sql->prepareStatementForSqlObject($select);
-        $resultSet = $statement->execute();
-        $userRoles = iterator_to_array($resultSet);
-
-        $newUserRoles = array();
-        foreach ($userRoles as $key => $val) {
-            $newUserRoles[$key] = ["id" => $val['id'], "name" => $val['name']];
+        if ($row) {
+            //
+            // user profile
+            // 
+            $userProfile['firstname'] = $row['firstname'];
+            $userProfile['lastname'] = $row['lastname'];
+            $userProfile['jobTitle'] = $row['jobTitle'];
+            $userProfile['locale'] = $row['locale'];
+            $userProfile['themeColor'] = $row['themeColor'];
+            //
+            // user roles
+            // 
+            $sql    = new Sql($this->adapter);
+            $select = $sql->select();
+            $select->columns(
+                [
+                    'id' => 'roleId',
+                ]
+            );
+            $select->from('userRoles');
+            $select->join(['r' => 'roles'], 'r.roleId = userRoles.roleId',
+                [
+                    'name' => 'roleName'
+                ],
+            $select::JOIN_LEFT);
+            $select->where(['userId' => $userId]);
+            // echo $select->getSqlString($this->adapter->getPlatform());
+            // die;
+            $statement = $sql->prepareStatementForSqlObject($select);
+            $resultSet = $statement->execute();
+            $userRoles = iterator_to_array($resultSet);
+            $statement->getResource()->closeCursor();
+            $newUserRoles = array();
+            foreach ($userRoles as $key => $val) {
+                $newUserRoles[$key] = ["id" => $val['id'], "name" => $val['name']];
+            }
+            $row['userRoles'] = $newUserRoles;
+            $row['userProfile'] = json_encode($userProfile);
         }
-        $row['userRoles'] = $newUserRoles;
-
-        $statement->getResource()->closeCursor();
         return $row;
     }
 
@@ -209,15 +236,23 @@ class UserModel
             [
                 'id' => 'userId',
                 'userId',
-                'firstname',
-                'lastname',
                 'email',
                 'active',
-                'themeColor',
             ]
         );
         $select->from('users');
-        $select->where(['email' => $username]);
+        $select->join(
+            ['up' => 'userProfile'], 'up.userId = u.userId',
+            [
+                'firstname',
+                'lastname',
+                'jobTitle',
+                'locale' => new Expression("JSON_OBJECT('id', l.langId, 'name', l.langName)"),
+                'themeColor',
+            ],
+            $select::JOIN_LEFT
+        );
+        $select->where(['u.email' => $username]);
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = $statement->execute();
         $row = $resultSet->current();
@@ -261,6 +296,9 @@ class UserModel
                 $data['users']['password'] = password_hash($data['users']['password'], PASSWORD_DEFAULT, ['cost' => 10]);
             }
             $this->users->insert($data['users']);
+            $data['userProfile']['userProfileId'] = createGuid();
+            $data['userProfile']['userId'] = $userId;
+            $this->userProfile->insert($data['userProfile']);
             if (! empty($data['userRoles'])) {
                 foreach ($data['userRoles'] as $val) {
                     $this->userRoles->insert(['userId' => $userId, 'roleId' => $val['id']]);
@@ -294,6 +332,7 @@ class UserModel
                     $this->userRoles->insert(['userId' => $userId, 'roleId' => $val['id']]);
                 }
             }
+            $this->userProfile->update($data['userProfile'], ['userId' => $userId]);
             $this->userAvatars->delete(['userId' => $userId]);
             if (! empty($data['avatar']['image'])) { // let's read mime type safely
                 $mimeType = finfo_buffer(

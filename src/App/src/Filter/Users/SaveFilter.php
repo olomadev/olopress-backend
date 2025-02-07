@@ -49,40 +49,7 @@ class SaveFilter extends InputFilter
                 ]
             ],
         ]);
-        $this->add([
-            'name' => 'firstname',
-            'required' => true,
-            'filters' => [
-                ['name' => MbUcFirstFilter::class],
-            ],
-            'validators' => [
-                [
-                    'name' => StringLength::class,
-                    'options' => [
-                        'encoding' => 'UTF-8',
-                        'min' => 2,
-                        'max' => 120,
-                    ],
-                ],
-            ],
-        ]);
-        $this->add([
-            'name' => 'lastname',
-            'required' => true,
-            'filters' => [
-                ['name' => MbUcFirstFilter::class],
-            ],
-            'validators' => [
-                [
-                    'name' => StringLength::class,
-                    'options' => [
-                        'encoding' => 'UTF-8',
-                        'min' => 2,
-                        'max' => 120,
-                    ],
-                ],
-            ],
-        ]);
+        
         $this->add([
             'name' => 'email',
             'required' => false,
@@ -144,6 +111,74 @@ class SaveFilter extends InputFilter
 
         $objectFilter = $this->filter->get(ObjectInputFilter::class);
         $objectFilter->add([
+            'name' => 'firstname',
+            'required' => false,
+            'filters' => [
+                ['name' => MbUcFirstFilter::class],
+            ],
+            'validators' => [
+                [
+                    'name' => StringLength::class,
+                    'options' => [
+                        'encoding' => 'UTF-8',
+                        'min' => 2,
+                        'max' => 120,
+                    ],
+                ],
+            ],
+        ]);
+        $objectFilter->add([
+            'name' => 'lastname',
+            'required' => false,
+            'filters' => [
+                ['name' => MbUcFirstFilter::class],
+            ],
+            'validators' => [
+                [
+                    'name' => StringLength::class,
+                    'options' => [
+                        'encoding' => 'UTF-8',
+                        'min' => 2,
+                        'max' => 120,
+                    ],
+                ],
+            ],
+        ]);
+        $objectFilter->add([
+            'name' => 'jobTitle',
+            'required' => false,
+            'filters' => [
+                ['name' => MbUcFirstFilter::class],
+            ],
+            'validators' => [
+                [
+                    'name' => StringLength::class,
+                    'options' => [
+                        'encoding' => 'UTF-8',
+                        'min' => 3,
+                        'max' => 100,
+                    ],
+                ],
+            ],
+        ]);
+        $objectFilter->add([
+            'name' => 'themeColor',
+            'required' => false,
+            'validators' => [
+                [
+                    'name' => StringLength::class,
+                    'options' => [
+                        'encoding' => 'UTF-8',
+                        'min' => 7,
+                        'max' => 7,
+                    ],
+                ],
+            ],
+        ]);
+        $this->add($objectFilter, 'userProfile');
+
+        $objectFilter = $this->filter->get(ObjectInputFilter::class);
+        $objectFilter->add([
             'name' => 'image',
             'required' => false,
             'filters' => [
@@ -166,21 +201,6 @@ class SaveFilter extends InputFilter
             ]
         ]);
         $this->add($objectFilter, 'avatar');
-        
-        $this->add([
-            'name' => 'themeColor',
-            'required' => false,
-            'validators' => [
-                [
-                    'name' => StringLength::class,
-                    'options' => [
-                        'encoding' => 'UTF-8',
-                        'min' => 7,
-                        'max' => 7,
-                    ],
-                ],
-            ],
-        ]);
         
         // User Roles Input filter
         //

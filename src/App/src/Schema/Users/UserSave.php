@@ -18,16 +18,6 @@ class UserSave
      * @var string
      * @OA\Property()
      */
-    public $firstname;
-    /**
-     * @var string
-     * @OA\Property()
-     */
-    public $lastname;
-    /**
-     * @var string
-     * @OA\Property()
-     */
     public $password;
     /**
      * @var string
@@ -45,10 +35,12 @@ class UserSave
      */
     public $emailActivation;
     /**
-     * @var string
-     * @OA\Property()
-     */
-    public $themeColor;
+    * @var object
+    * @OA\Property(
+    *     ref="#/components/schemas/UserProfileObject",
+    * )
+    */
+    public $userProfile;
     /**
     * @var object
     * @OA\Property(

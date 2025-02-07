@@ -41,7 +41,7 @@ class ConfigProvider
                     Filter\ObjectInputFilter::class => Container\ObjectInputFilterFactory::class,
                     Filter\CollectionInputFilter::class => Container\CollectionInputFilterFactory::class,
                     // Auth
-                    Filter\Auth\AuthFilter::class => InvokableFactory::class,
+                    Filter\Auth\TokenFilter::class => InvokableFactory::class,
                     Filter\Auth\ResetPasswordFilter::class => Filter\Auth\ResetPasswordFilterFactory::class,
                     Filter\Auth\ChangePasswordFilter::class => Filter\Auth\ChangePasswordFilterFactory::class,
                     // Account
@@ -147,6 +147,9 @@ class ConfigProvider
                 Handler\Categories\DeleteHandler::class => Handler\Categories\DeleteHandlerFactory::class,
                 Handler\Categories\FindAllHandler::class => Handler\Categories\FindAllHandlerFactory::class,
                 Handler\Categories\FindAllByPagingHandler::class => Handler\Categories\FindAllByPagingHandlerFactory::class,
+                // comments
+                Handler\Comments\DeleteHandler::class => Handler\Comments\DeleteHandlerFactory::class,
+                Handler\Comments\FindAllByPagingHandler::class => Handler\Comments\FindAllByPagingHandlerFactory::class,
                 // files
                 Handler\Files\CreateHandler::class => Handler\Files\CreateHandlerFactory::class,
                 Handler\Files\DeleteHandler::class => Handler\Files\DeleteHandlerFactory::class,
@@ -217,6 +220,13 @@ class ConfigProvider
                     $cacheStorage = $container->get(StorageInterface::class);
                     return new Model\CategoryModel($categories, $cacheStorage);
                 },
+                Model\CommentModel::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $postComments = new TableGateway('postComments', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $cacheStorage = $container->get(StorageInterface::class);
+                    $columnFilters = $container->get(ColumnFiltersInterface::class);
+                    return new Model\CommentModel($postComments, $cacheStorage, $columnFilters);
+                },
                 Model\CommonModel::class => function ($container) {
                     $config = $container->get('config');
                     $dbAdapter = $container->get(AdapterInterface::class);
@@ -228,8 +238,9 @@ class ConfigProvider
                     $simpleCache = $container->get(SimpleCacheInterface::class);
                     $columnFilters = $container->get(ColumnFiltersInterface::class);
                     $users = new TableGateway('users', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $userProfile = new TableGateway('userProfile', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $failedLogins = new TableGateway('failedLogins', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
-                    return new Model\FailedLoginModel($users, $failedLogins, $simpleCache, $columnFilters);
+                    return new Model\FailedLoginModel($users, $userProfile, $failedLogins, $simpleCache, $columnFilters);
                 },
                 Model\FileModel::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
@@ -321,11 +332,13 @@ class ConfigProvider
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $cacheStorage = $container->get(StorageInterface::class);
                     $users = new TableGateway('users', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
+                    $userProfile = new TableGateway('userProfile', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $userRoles = new TableGateway('userRoles', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $userAvatars = new TableGateway('userAvatars', $dbAdapter, null, new ResultSet(ResultSet::TYPE_ARRAY));
                     $columnFilters = $container->get(ColumnFiltersInterface::class);
                     return new Model\UserModel(
                         $users,
+                        $userProfile,
                         $userRoles,
                         $userAvatars,
                         $cacheStorage,

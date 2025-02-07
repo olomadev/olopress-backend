@@ -271,7 +271,7 @@ class JwtAuthentication implements AuthenticationInterface
     private function getDeviceKey(ServerRequestInterface $request)
     {
         $server = $request->getServerParams();
-        $userAgent = empty($server['HTTP_USER_AGENT']) ? 'unknown' : $server['HTTP_USER_AGENT'];
+        $userAgent = empty($server['HTTP_USER_AGENT']) ? 'unknown' : (string)$server['HTTP_USER_AGENT'];
         return md5($userAgent);
     }
 

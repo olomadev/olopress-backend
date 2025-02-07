@@ -49,8 +49,9 @@ class PostModel
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->columns([
+
             'id' => 'postId',
-            'authorId' => new Expression("JSON_OBJECT('id', u.userId, 'name', CONCAT(u.firstname, ' ', u.lastname))"),
+            'authorId' => new Expression("JSON_OBJECT('id', up.userId, 'name', CONCAT(up.firstname, ' ', up.lastname))"),
             'title',
             'permalink',
             'contentHtml',
@@ -58,7 +59,7 @@ class PostModel
             'createdAt',
         ]);
         $select->from(['p' => 'posts']);
-        $select->join(['u' => 'users'], 'u.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
+        $select->join(['up' => 'userProfile'], 'up.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
         $select->join(['s' => 'screenshots'], 'p.postId = s.postId', ['screenId', 'imageType'], $select::JOIN_LEFT);
         $select->order(['createdAt DESC']);
         return $select;
@@ -110,7 +111,7 @@ class PostModel
         $select = $sql->select();
         $select->columns([
             'id' => 'postId',
-            'authorId' => new Expression("JSON_OBJECT('id', u.userId, 'name', CONCAT(u.firstname, ' ', u.lastname))"),
+            'authorId' => new Expression("JSON_OBJECT('id', up.userId, 'name', CONCAT(up.firstname, ' ', up.lastname))"),
             'title',
             'permalink',
             'description',
@@ -121,7 +122,7 @@ class PostModel
             'createdAt',
         ]);
         $select->from(['p' => 'posts']);
-        $select->join(['u' => 'users'], 'u.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
+        $select->join(['up' => 'userProfile'], 'up.userId = p.authorId', ['firstname', 'lastname'], $select::JOIN_LEFT);
         $select->join(['f' => 'files'], 
             new Expression('f.fileId = p.featuredImageId AND f.fileDimension = ?', ['80x55']), 
             [],
@@ -190,6 +191,7 @@ class PostModel
             $this->posts->insert($data['posts']);
             $this->saveItems($data);
             $this->deleteCache();
+            $this->cache->removeItem(CACHE_ROOT_KEY."posts:total");
             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
@@ -206,7 +208,7 @@ class PostModel
             $data['posts']['permalink'] = $this->updatePermalink($postId, $data['posts']['permalink']);
             $this->posts->update($data['posts'], ['postId' => $postId]);
             $this->saveItems($data);
-            $this->deleteCache();
+            $this->deleteCache($data['posts']['permalink']);
             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
@@ -230,17 +232,16 @@ class PostModel
 
     public function delete(string $postId)
     {
-        $postFiles = $this->findPostFiles($postId);
+        $row = $this->findSlugByPostId($postId);
         try {
             $this->conn->beginTransaction();
             $this->posts->delete(['postId' => $postId]);
-            $this->postTags->delete(['postId' => $postId]);
-            $this->postCategories->delete(['postId' => $postId]);
-            foreach ($postFiles as $fileId) {
-                $this->files->delete(['fileId' => $fileId]);
-            }
-            $this->deleteCache();
-            $this->conn->commit();
+            if ($row) {
+                $this->deleteCache($row['permalink']);
+                $this->cache->removeItem(CACHE_ROOT_KEY."posts:total");
+                $this->cache->removeItem(CACHE_ROOT_KEY."claps:".$postId);
+            }         
+             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
             throw $e;
@@ -249,6 +250,8 @@ class PostModel
 
     private function updatePermalink(string $postId, string $permalink)
     {
+        $this->deleteCache($permalink); // remove old permalink cache
+
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->columns([
@@ -316,25 +319,29 @@ class PostModel
         }
     }
 
-    private function findPostFiles(string $postId)
+    public function findSlugByPostId(string $postId)
     {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
-        $select->columns(['fileId']);
-        $select->from(['pf' => 'postFiles']);
-        $select->where(['pf.postId' => $postId]);
-        $select->group('pf.fileId');
+        $select->columns(['permalink']);
+        $select->from(['p' => 'posts']);
+        $select->where(['postId' => $postId]);
+
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = $statement->execute();
-        $results = iterator_to_array($resultSet);
+        $row = $resultSet->current();
         $statement->getResource()->closeCursor();
-        return $results ? array_column($results, 'fileId') : array();
+        return $row;
     }
 
-    private function deleteCache()
+    public function deleteCache($permalink = null)
     {
-        $pattern = 'olopage:posts-page-*';
+        if ($permalink) {
+            $this->cache->removeItem(CACHE_ROOT_KEY."posts:$permalink");
+            $this->cache->removeItem(CACHE_ROOT_KEY."comments:$permalink");
+        }
         $cursor = 0;
+        $pattern = CACHE_ROOT_KEY.'posts:page-*';
         do { // find keys
             $results = $this->predisClient->scan($cursor, ['MATCH' => $pattern, 'COUNT' => 200]);
             $cursor = $results[0];

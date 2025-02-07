@@ -24,6 +24,15 @@ class AuthenticationAdapter extends CallbackCheckAdapter
         $dbSelect->from($this->tableName)
             ->columns([Sql\Select::SQL_STAR])
             ->join(
+                ['up' => 'userProfile'], 'up.userId = '.$this->tableName.'.userId',
+                [
+                    'firstname',
+                    'lastname',
+                    'locale',
+                ],
+                $dbSelect::JOIN_LEFT
+            )
+            ->join(
                 ['ua' => 'userAvatars'], 'ua.userId = '.$this->tableName.'.userId',
                 [
                     'avatar' => new Expression("TO_BASE64(avatarImage)"),
