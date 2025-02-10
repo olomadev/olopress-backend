@@ -39,7 +39,6 @@ class CommentModel
 
             'id' => 'commentId',
             'name',
-            'email',
             'body' =>  new Expression("SUBSTRING_INDEX(body, ' ', 10)"),
             'published',
             'createdAt',
@@ -52,7 +51,6 @@ class CommentModel
             ],
             $select::JOIN_LEFT
         );
-        $select->order(['createdAt DESC']);
         return $select;
     }
 
@@ -63,8 +61,8 @@ class CommentModel
         $this->columnFilters->setColumns([
             'postTitle',
             'name',
-            'email',
             'body',
+            'createdAt',
         ]);
         $this->columnFilters->setData($get);
         $this->columnFilters->setSelect($select);
@@ -95,13 +93,28 @@ class CommentModel
         return $paginator;
     }
 
+    public function findPostByCommentId(string $commentId)
+    {
+        $sql = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(['postId']);
+        $select->from(['c' => 'comments']);
+        $select->where(['commentId' => $commentId]);
+
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $resultSet = $statement->execute();
+        $row = $resultSet->current();
+        $statement->getResource()->closeCursor();
+        return $row;
+    }
+
     public function update(array $data) : string
     {
-        $commentId = $data['id'];
+        $commentId = $data['id'];    
         try {
             $this->conn->beginTransaction();
             $this->postComments->update($data['comments'], ['commentId' => $commentId]);
-            $this->deleteCache();
+            $this->deleteCache($data['postId']);
             $this->conn->commit();
         } catch (Exception $e) {
             $this->conn->rollback();
@@ -111,20 +124,25 @@ class CommentModel
 
     public function delete(string $commentId)
     {
-        try {
-            $this->conn->beginTransaction();
-            $this->postComments->delete(['commentId' => $commentId]);
-            $this->deleteCache();
-            $this->conn->commit();
-        } catch (Exception $e) {
-            $this->conn->rollback();
-            throw $e;
+        $row = $this->findPostByCommentId($commentId);
+        if ($row) {
+            try {
+                $this->conn->beginTransaction();
+                $this->postComments->delete(['commentId' => $commentId]);
+                $this->deleteCache($row['postId']);
+                $this->conn->commit();
+            } catch (Exception $e) {
+                $this->conn->rollback();
+                throw $e;
+            }    
         }
     }
 
-    public function deleteCache()
+    public function deleteCache(string $postId)
     {
-
+        $this->cache->removeItem(CACHE_ROOT_KEY."comments:".$postId);
     }
+
+
 
 }

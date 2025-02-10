@@ -240,6 +240,7 @@ class PostModel
                 $this->deleteCache($row['permalink']);
                 $this->cache->removeItem(CACHE_ROOT_KEY."posts:total");
                 $this->cache->removeItem(CACHE_ROOT_KEY."claps:".$postId);
+                $this->cache->removeItem(CACHE_ROOT_KEY."comments:".$postId);
             }         
              $this->conn->commit();
         } catch (Exception $e) {
@@ -338,7 +339,6 @@ class PostModel
     {
         if ($permalink) {
             $this->cache->removeItem(CACHE_ROOT_KEY."posts:$permalink");
-            $this->cache->removeItem(CACHE_ROOT_KEY."comments:$permalink");
         }
         $cursor = 0;
         $pattern = CACHE_ROOT_KEY.'posts:page-*';
